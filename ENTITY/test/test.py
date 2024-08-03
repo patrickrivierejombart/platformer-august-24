@@ -11,7 +11,7 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+player_pos = [screen.get_width() / 2, screen.get_height() / 2]
 
 while running:
     # poll for events
@@ -22,19 +22,25 @@ while running:
 
     screen.fill("purple")
 
-    pygame.draw.circle(screen, "red", player_pos, 40)
-    pygame.draw.circle(screen, "red", player_pos, 40)
+
+    pygame.draw.circle(screen, "red", pygame.Vector2(player_pos[0], player_pos[1]), 40)
+    pygame.draw.rect(screen, "gray", rect=[pygame.Vector2(0, screen.get_height()//5*4), pygame.Vector2(screen.get_width(), screen.get_height()//5)])
+
+    lastY = player_pos[1]
 
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_z]:
-        player_pos.y -= 300 * dt
+        player_pos[1] -= 300 * dt
     if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
+        player_pos[1] += 300 * dt
     if keys[pygame.K_q]:
-        player_pos.x -= 300 * dt
+        player_pos[0] -= 300 * dt
     if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+        player_pos[0] += 300 * dt
+
+    if player_pos[1]+40 >screen.get_height()//5*4:
+        player_pos[1] = screen.get_height()//5*4-41
 
     # flip() the display to put your work on screen
     pygame.display.flip()
