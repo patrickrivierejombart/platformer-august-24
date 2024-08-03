@@ -9,42 +9,42 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
+# delta time
 dt = 0
 
-player_pos = [screen.get_width() / 2, screen.get_height() / 2]
+# Create an entity named "player" using the "Entity" class
+player = entity.Entity(100, 4, [20, 40], [screen.get_width() / 2, 0])
 
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+    # Check when the window is closed
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    # Drawing
     screen.fill("purple")
-
-
-    pygame.draw.circle(screen, "red", pygame.Vector2(player_pos[0], player_pos[1]), 40)
     pygame.draw.rect(screen, "gray", rect=[pygame.Vector2(0, screen.get_height()//5*4), pygame.Vector2(screen.get_width(), screen.get_height()//5)])
+    pygame.draw.circle(screen, "red", pygame.Vector2(player.pos[0], player.pos[1]), 40)
 
-    lastY = player_pos[1]
-
-
+    # Check keys
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_z]:
-        player_pos[1] -= 300 * dt
-    if keys[pygame.K_s]:
-        player_pos[1] += 300 * dt
     if keys[pygame.K_q]:
-        player_pos[0] -= 300 * dt
+        player.direction.left()
+        player.go_forward(300 * dt)
     if keys[pygame.K_d]:
-        player_pos[0] += 300 * dt
+        player.direction.right()
+        player.go_forward(300 * dt)
 
-    if player_pos[1]+40 >screen.get_height()//5*4:
-        player_pos[1] = screen.get_height()//5*4-41
+    # Check collisions
+    if player.is_in_object( (player.pos[0], player.pos[1]+player.object_size[1]) , (player.pos[0], (screen.get_height()//5*4)) ):
+        player.pos[1] += abs(screen.get_height()//5*4-player.object_size[1]-player.pos[1])*30 * dt
+    else:
+        player.pos[1] += 300*dt
 
-    # flip() the display to put your work on screen
+    # Showing
     pygame.display.flip()
 
     dt = clock.tick(60) / 1000
 
+# Close the drawings :(
 pygame.quit()
