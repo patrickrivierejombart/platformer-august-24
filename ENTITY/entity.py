@@ -132,11 +132,6 @@ class Entity():
         """
             Tells if a certain point is in the players hitbox in a specific position
         """
-        # x2/a2 + y2/b2 = 1 is the formula of the bounderies of an ellipse
-        # x2/a2 + y2/b2 <= 1 is the formula of the inside of an ellipse
-        # [x,y] -> position of the point we want to check
-        # a -> half of the longest side of the ellipse
-        # b -> half of the shortest side of the ellipse
         pointX = point[0]-pos[0]
         pointY = point[1]-pos[1]
         if ((pointX**2)/(self.object_size[1]**2))+((pointY**2)/(self.object_size[0]**2)) <= 1:
@@ -147,11 +142,6 @@ class Entity():
         """
             Tells if a certain point is in the players hitbox in a specific position
         """
-        # x2/a2 + y2/b2 = 1 is the formula of the bounderies of an ellipse
-        # x2/a2 + y2/b2 <= 1 is the formula of the inside of an ellipse
-        # [x,y] -> position of the point we want to check
-        # a -> half of the longest side of the ellipse
-        # b -> half of the shortest side of the ellipse
         pointX = point[0]-pos[0]
         pointY = point[1]-pos[1]
         if ((pointX**2)/(self.object_size[1]**2))+((pointY**2)/(self.object_size[0]**2)) <= 1:
