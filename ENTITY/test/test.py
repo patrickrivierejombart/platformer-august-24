@@ -1,7 +1,7 @@
 import sys, os
 from winsound import PlaySound
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import entity
+import entity, utils
 # Example file showing a circle moving on screen
 import pygame
 
@@ -40,6 +40,8 @@ while running:
     if keys[pygame.K_z]:
         if player.on_ground:
             player.jump(10)
+
+    
 
     # Check collisions
     if player.is_in_object( (player.pos[0], player.pos[1]+player.object_size[1]) , (player.pos[0], (screen.get_height()//5*4)) ):

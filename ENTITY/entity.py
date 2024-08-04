@@ -144,7 +144,7 @@ class Entity():
         """
         pointX = point[0]-pos[0]
         pointY = point[1]-pos[1]
-        if ((pointX**2)/(self.object_size[1]**2))+((pointY**2)/(self.object_size[0]**2)) <= 1:
+        if ((pointX**2)/(self.object_size[1]**2))+((pointY**2)/(self.object_size[0]**2)) > 1:
             return True
         else: return False
 
