@@ -1,4 +1,5 @@
 import sys, os
+from winsound import PlaySound
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import entity
 # Example file showing a circle moving on screen
@@ -14,6 +15,8 @@ dt = 0
 
 # Create an entity named "player" using the "Entity" class
 player = entity.Entity(100, 4, [20, 40], [screen.get_width() / 2, 0])
+
+
 
 while running:
     # Check when the window is closed
@@ -34,13 +37,18 @@ while running:
     if keys[pygame.K_d]:
         player.direction.right()
         player.go_forward(300 * dt)
+    if keys[pygame.K_z]:
+        if player.on_ground:
+            player.jump(10)
 
     # Check collisions
     if player.is_in_object( (player.pos[0], player.pos[1]+player.object_size[1]) , (player.pos[0], (screen.get_height()//5*4)) ):
-        player.pos[1] += abs(screen.get_height()//5*4-player.object_size[1]-player.pos[1])*30 * dt
+        player.on_ground = True
     else:
-        player.pos[1] += 300*dt
+        player.on_ground = False
+        # player.pos[1] += 300*dt
 
+    player.tick(dt, 100)
     # Showing
     pygame.display.flip()
 
