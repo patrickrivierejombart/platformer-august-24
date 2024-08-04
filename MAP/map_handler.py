@@ -66,7 +66,6 @@ class MapHandler:
         import os
         import yaml
         self.mapping = None
-        print(self.MAPPING_FILE)
         with open(os.path.join(os.path.dirname(__file__), 'level_saves', self.MAPPING_FILE), 'r') as mapping_file:
             try:
                 self.mapping = yaml.safe_load(mapping_file)
