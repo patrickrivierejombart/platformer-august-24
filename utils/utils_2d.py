@@ -7,7 +7,7 @@ class Utils2DException(Exception):
     """
 
 
-class Force:
+class Vector2D:
     def __init__(self, x, y):
         self._x = x
         self._y = y
@@ -25,14 +25,32 @@ class Force:
         return np.array([self._x, self._y])
 
 
-def acceleration(mass, forces: List[Force]) -> Force:
-    try:
-        assert mass > 0
-    except AssertionError:
-        raise Utils2DException(f'Mass ({mass}) must be a positive number.')
-    impossible_value = -9999
-    acc_list = np.sum([force.vector/mass for force in forces], axis=0)
-    acc = Force(acc_list[0], acc_list[1]) if len(acc_list) == 2 else impossible_value
-    if acc == impossible_value:
-        raise Utils2DException('Acceleration calculus failed for an unkown reason.')
-    return acc
+class Force(Vector2D):
+    """
+    """
+
+
+class Speed(Vector2D):
+    """
+    """
+
+
+class Position(Vector2D):
+    """
+    """
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.speed_list = None
+        self.force_list = None
+
+    def update_speed(self, speed_list: List[Speed]):
+        self.speed_list = speed_list
+    
+    def update_force(self, force_list: List[Force]):
+        self.force_list = force_list
+    
+    def increment_position(self, dt):
+        vit = np.sum([force.vector for force in self.force_list], axis = 0) * dt + np.sum([speed.vector for speed in self.speed_list], axis = 0)
+        pos = self.vector + vit * dt / 2
+        self._x = pos[0]
+        self._y = pos[1]
