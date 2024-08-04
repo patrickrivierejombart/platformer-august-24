@@ -12,7 +12,7 @@ class Level:
 
 
 class Level1(Level):
-    # Return name of the level file loaded
+    # Return name of the level file to load
     @property
     def level_name(self):
         return 'starter-village.sav'
