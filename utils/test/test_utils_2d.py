@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from utils.utils_2d import acceleration, Force, position, Position, Speed
+from utils.utils_2d import Force, Speed, Position
 
 
 if __name__ == '__main__':
