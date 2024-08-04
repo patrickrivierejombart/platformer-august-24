@@ -1,3 +1,7 @@
+"""
+file: map_handler.py
+synopsis: Handles all map related tasks (Map load, TODO)
+"""
 
 
 class Level:
@@ -28,7 +32,7 @@ class LevelMap:
         def load_save(self, level: Level):
             import os
             map_rows = None
-            with open(os.path.join(os.path.dirname(__file__), 'level_saves', level.level_name)) as level_file:
+            with open(os.path.join(os.path.dirname(__file__), 'level_saves', level.level_name), 'r') as level_file:
                 map_rows = [[symbol for symbol in line.strip('\n').split('|')] for line in level_file]
                 try:
                     row_length = len(map_rows[0])
@@ -52,18 +56,29 @@ class LevelMap:
 
 
 class MapHandler:
+    MAPPING_FILE = 'mapping.yml'
+
     def __init__(self) -> None:
         self.level_map = LevelMap(level=Level1())
+        self.__load_mapping()
+    
+    def __load_mapping(self):
+        import os
+        import yaml
+        self.mapping = None
+        print(self.MAPPING_FILE)
+        with open(os.path.join(os.path.dirname(__file__), 'level_saves', self.MAPPING_FILE), 'r') as mapping_file:
+            try:
+                self.mapping = yaml.safe_load(mapping_file)
+            except Exception:
+                raise MapHandlerException(f'Mapping file {self.MAPPING_FILE} is either missing or corrupt.')
+    
+    def __getitem__(self, __name):
+        try:
+            assert __name in self.mapping
+            return self.mapping[__name]
+        except AssertionError:
+            raise MapHandlerException(f'Symbol {__name} can not be found in mapping {self.MAPPING_FILE}.')
 
     def load_level(self, level: Level):
         self.level_map = LevelMap(level=level)
-    
-    symbol_meaning = {
-        '#': 'map_block',
-        '>': 'level_portal',
-        'S': 'shop',
-        'N': 'npc_character',
-        'L': 'loot_box',
-        'C': 'checkpoint',
-        ' ': 'empty'
-    }

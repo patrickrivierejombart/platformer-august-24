@@ -8,3 +8,4 @@ if __name__ == '__main__':
     map_handler = MapHandler()
     map_handler.load_level(level=Level1())
     print(map_handler.level_map.map)
+    print(map_handler['#'])
