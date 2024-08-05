@@ -1,5 +1,5 @@
 import pygame
-from utils.support import import_sprite
+from utils.sprite_utils import import_sprite
 from settings import BG_IMG  # TO CHANGE
 
 
