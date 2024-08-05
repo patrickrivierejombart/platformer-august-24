@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 
@@ -8,9 +8,13 @@ class Utils2DException(Exception):
 
 
 class Vector2D:
-    def __init__(self, x, y):
-        self._x = x
-        self._y = y
+    def __init__(self, x = 0, y = 0):
+            self._x = x
+            self._y = y
+
+    @classmethod
+    def from_tuple(cls, x_y: Tuple[float,float]):
+        return cls(x=x_y[0], y=x_y[1])
     
     @property
     def x(self):
@@ -62,7 +66,7 @@ class Action:
     def __init__(self, action_name: str, vector_list: List[Force]):
         self.action_name = action_name
         self.action_list: List[Force] = vector_list
-        self.active_action_list: List[Force] = List[Force]()
+        self.active_action_list: List[Force] = list()
     
     def trigger(self):
         if not self.active_action_list:
