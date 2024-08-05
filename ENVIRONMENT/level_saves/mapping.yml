@@ -5,3 +5,8 @@
 'L': 'loot_box'
 'C': 'checkpoint'
 ' ': 'empty'
+# TODO : translate the ones above into the ones under
+'tile': '#'
+'trap': 't'
+'player': 'P'
+'goal': 'G'
