@@ -54,3 +54,21 @@ class Position(Vector2D):
         pos = self.vector + vit * dt / 2
         self._x = pos[0]
         self._y = pos[1]
+
+
+class Action:
+    """
+    """
+    def __init__(self, action_name: str, vector_list: List[Force]):
+        self.action_name = action_name
+        self.action_list: List[Force] = vector_list
+        self.active_action_list: List[Force] = List[Force]()
+    
+    def trigger(self):
+        if not self.active_action_list:
+            self.active_action_list = self.action_list
+
+    def play(self):
+        if self.active_action_list:
+            play_force: Force = self.active_action_list.pop(0)
+            return play_force
