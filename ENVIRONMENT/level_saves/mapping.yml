@@ -1,0 +1,12 @@
+'#': 'map_block'
+'>': 'level_portal'
+'S': 'shop'
+'N': 'npc_character'
+'L': 'loot_box'
+'C': 'checkpoint'
+' ': 'empty'
+# TODO : translate the ones above into the ones under
+'tile': '#'
+'trap': 't'
+'player': 'P'
+'goal': 'G'
