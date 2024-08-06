@@ -20,7 +20,6 @@ class World:
         self.current_x = 0
         self.gravity = 0.7
         self.game = Game(self.screen)
-        self.overall_speed = 8
     
     def _setup_world(self, layout):
         self.tiles = pygame.sprite.Group()
@@ -49,14 +48,14 @@ class World:
         player_x = player.rect.centerx
         direction_x = player.direction.x
         if player_x < WIDTH // 3 and direction_x < 0:
-            self.world_shift = self.overall_speed
+            self.world_shift = 8
             player.speed = 0
         elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
-            self.world_shift = -self.overall_speed
+            self.world_shift = -8
             player.speed = 0
         else:
             self.world_shift = 0
-            player.speed = self.overall_speed
+            player.speed = 3
     
     def _apply_gravity(self, player):
         player.direction.y += self.gravity
