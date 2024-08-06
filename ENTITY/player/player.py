@@ -1,6 +1,7 @@
 import pygame
 from utils.sprite_utils import import_sprite
-from settings import BG_IMG  # TO CHANGE
+from settings import *
+from utils import utils_config as cutils
 
 
 class Player(pygame.sprite.Sprite):
@@ -105,3 +106,12 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0
             self.status = "lose"
         self._animate()
+
+class New_Player(Player):
+    def __init__(self, pos, action_list):
+        super().__init__(pos)
+        self.action_list = action_list
+    
+    def _jump(self, index = 0):
+        jump_action: cutils.Action = self.action_list["jump"]
+        jump_action.trigger()
