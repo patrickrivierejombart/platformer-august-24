@@ -20,6 +20,7 @@ class Entity(pygame.sprite.Sprite):
                  base_attack: int = 5
                  ):
         super().__init__()
+        self.position = position
         self._import_character_assets(sprite_path)
         self.frame_index = 0
         self.animation_speed = animation_speed
