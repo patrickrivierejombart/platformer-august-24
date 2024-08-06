@@ -1,5 +1,6 @@
 import pygame
 from utils.sprite_utils import import_sprite
+from settings import *
 from utils import utils_config as cutils
 
 
