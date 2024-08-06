@@ -41,7 +41,6 @@ class World:
                     goal_sprite = Goal((x, y), tile_size)
                     self.goal.add(goal_sprite)
     
-    
     def _scroll_x(self):
         player = self.player.sprite
         player_x = player.rect.centerx
@@ -127,4 +126,3 @@ class World:
         self.game.show_life(self.player.sprite)
         self.player.draw(self.screen)
         self.game.game_state(self.player.sprite, self.goal.sprite)
-        
