@@ -6,7 +6,7 @@ from utils import utils_2d as utils
 from utils import utils_config as cutils
 
 
-class Past_Player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     def __init__(self, pos):  # + sprite_path TODO
         super().__init__()
         self._import_character_assets()
@@ -110,7 +110,7 @@ class Past_Player(pygame.sprite.Sprite):
             self.status = "lose"
         self._animate()
 
-class Player(Past_Player):
+class New_Player(Player):
     def __init__(self, pos, action_list, dt = 1):
         super().__init__(pos)
         self.dt = dt
