@@ -6,7 +6,6 @@ from ENVIRONMENT.elements.goal import Goal
 from GUI.game import Game
 from ENTITY.player.player import Player
 from ENVIRONMENT.map_handler import MapHandler, Level
-from utils import utils_2d as utils
 
 
 class World:
@@ -128,3 +127,4 @@ class World:
         self.game.show_life(self.player.sprite)
         self.player.draw(self.screen)
         self.game.game_state(self.player.sprite, self.goal.sprite)
+        
