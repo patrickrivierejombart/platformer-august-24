@@ -115,6 +115,5 @@ class New_Player(Player):
         self.action_list = action_list
     
     def _jump(self, index = 0):
-        action_list = cutils.read_configured_actions()
-        jump_action: cutils.Action = action_list["jump"]
+        jump_action: cutils.Action = self.action_list["jump"]
         jump_action.trigger()
