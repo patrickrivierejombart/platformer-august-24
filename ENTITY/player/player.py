@@ -1,6 +1,5 @@
 import pygame
 from utils.sprite_utils import import_sprite
-from settings import BG_IMG  # TO CHANGE
 from utils import utils_config as cutils
 
 
@@ -82,7 +81,6 @@ class Player(pygame.sprite.Sprite):
     def _jump(self):
         self.direction.y = self.jump_move
 
-
     def _get_status(self):
         if self.direction.y < 0:
             self.status = "jump"
@@ -109,9 +107,8 @@ class Player(pygame.sprite.Sprite):
         self._animate()
 
 class New_Player(Player):
-    def __init__(self, pos, action_list, dt = 1):
+    def __init__(self, pos, action_list):
         super().__init__(pos)
-        self.dt = dt
         self.action_list = action_list
     
     def _jump(self, index = 0):
