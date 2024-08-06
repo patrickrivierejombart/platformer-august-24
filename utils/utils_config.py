@@ -12,14 +12,15 @@ def read_configured_actions() -> List[Action]:
         except Exception:
             raise Exception(f'Configuration file {actions_configuration_file} is either missing or corrupt.')
     if actions_yaml:
-        action_list = [
-            Action(
-                action_name=action_name, 
+        action_list = {
+            action_name: Action(
+                action_name=action_name,
                 vector_list=[
-                    Force.from_tuple((actions_yaml[action_name][idx])) 
+                    Force.from_tuple((actions_yaml[action_name][idx]))
                     for idx in range(len(actions_yaml[action_name]))
-                    ]) 
-                for action_name in actions_yaml
-                ]
+                    ]
+                )
+            for action_name in actions_yaml
+        }
         return action_list
     return list()
