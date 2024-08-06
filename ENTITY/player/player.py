@@ -1,4 +1,3 @@
-from ctypes import util
 import pygame
 from utils.sprite_utils import import_sprite
 from settings import BG_IMG  # TO CHANGE
