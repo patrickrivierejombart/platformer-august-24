@@ -75,10 +75,30 @@ class Entity():
         self.pos = pos
         self.vel = [0.0, 0.0]
         self.on_ground = False
+        self.jumping =  False
+        self.action_list = []
 
     def go_forward(self, speed: int = None):
         if not speed: speed = self.speed.x
         self.pos[0] += speed*self.direction.x
+
+    def add_actions(self, actions: list = [[]]):
+        old_actions = self.action_list
+        old_actions.reverse()
+        for all in actions:
+            for action in all:
+                old_actions.append(action)
+        old_actions.reverse()
+        self.action_list = old_actions
+    
+    def pop_action(self):
+        actions = self.action_list
+        return_var = actions.pop()
+        self.action_list = actions
+        return return_var
+    
+    def set_actions(self, actions: list = [[]]):
+        self.action_list = actions
 
     def update(self, pos: list = None, hp: int = None, lives: int = None, object_size: list = None, speed: tuple = None):
             """
@@ -94,24 +114,6 @@ class Entity():
             self.lives = lives
             self.object_size = object_size
             self.speed = speed
-    
-    def tick(self, dt: float, gravity: int = 300):
-        # Add the velocity to the player's position
-        self.pos[0] += self.vel[0]
-        self.pos[1] += self.vel[1]
-        
-        # Update the vertical movement based on gravity
-        if self.on_ground:
-            self.vel[1] = 0.0 # Prevent velocity from accumulating when on the ground
-        else:
-            self.vel[1] += gravity*dt
-        
-        # Drag (not necessary)
-        self.vel[0] -= self.vel[0] / 10.0
-        self.vel[1] -= self.vel[1] / 10.0
-    
-    def jump(self, force: float):
-        self.vel[1] -= force
 
     def is_in_hitbox(self, point: tuple):
         """

@@ -1,7 +1,9 @@
 import sys, os
 from winsound import PlaySound
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-import entity, utils
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from ENTITY import entity
+from utils import utils_2d
 # Example file showing a circle moving on screen
 import pygame
 
@@ -12,6 +14,7 @@ clock = pygame.time.Clock()
 running = True
 # delta time
 dt = 0
+
 
 # Create an entity named "player" using the "Entity" class
 player = entity.Entity(100, 4, [20, 40], [screen.get_width() / 2, 0])
@@ -39,22 +42,26 @@ while running:
         player.go_forward(300 * dt)
     if keys[pygame.K_z]:
         if player.on_ground:
-            player.jump(10)
+            player.jumping = True
 
-    
 
-    # Check collisions
-    if player.is_in_object( (player.pos[0], player.pos[1]+player.object_size[1]) , (player.pos[0], (screen.get_height()//5*4)) ):
-        player.on_ground = True
-    else:
+
+    if player.is_not_in_object( (player.pos[0], player.pos[1]+player.object_size[1]/2) , (player.pos[0], (screen.get_height()//5*4)) ):
         player.on_ground = False
-        # player.pos[1] += 300*dt
-
-    player.tick(dt, 100)
+        posForce = utils_2d.Position(player.pos[0], player.pos[1])
+        posForce.update_force(force_list=[utils_2d.Force(0, 50000)])
+        posForce.update_speed(speed_list=[utils_2d.Speed(0, 0)])
+        posForce.increment_position(dt)
+        player.pos[1] = posForce.y
+        print(player.pos[1])
+    else:
+        player.on_ground = True
+        
+    # Check collisions
     # Showing
     pygame.display.flip()
 
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(120) / 1000
 
 # Close the drawings :(
 pygame.quit()
