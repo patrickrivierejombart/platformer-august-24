@@ -1,8 +1,8 @@
 from utils.utils_2d import Action, Force
-from typing import List
+from typing import Dict
 
 
-def read_configured_actions() -> List[Action]:
+def read_configured_actions() -> Dict[str, Action]:
     import yaml
     actions_configuration_path = "assets/configurations/actions.yml"
     actions_yaml = None
@@ -23,4 +23,4 @@ def read_configured_actions() -> List[Action]:
             for action_name in actions_yaml
         }
         return action_list
-    return list()
+    return dict()

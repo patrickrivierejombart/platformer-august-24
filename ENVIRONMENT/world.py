@@ -4,8 +4,11 @@ from ENVIRONMENT.elements.tile import Tile
 from ENVIRONMENT.elements.trap import Trap
 from ENVIRONMENT.elements.goal import Goal
 from GUI.game import Game
-from ENTITY.player.player import Player
+from ENTITY.player.player import New_Player
 from ENVIRONMENT.map_handler import MapHandler, Level
+from utils.utils_2d import Position, Force
+from utils.utils_config import read_configured_actions
+from settings import gravity
 
 
 class World:
@@ -17,7 +20,6 @@ class World:
         self._setup_world(self.map_handler.level_map.map)
         self.world_shift = 0
         self.current_x = 0
-        self.gravity = 0.7
         self.game = Game(self.screen)
     
     def _setup_world(self, layout):
@@ -35,7 +37,12 @@ class World:
                     trap = Trap((x + (tile_size // 4), y + (tile_size // 4)), tile_size // 2)
                     self.traps.add(trap)
                 elif cell == self.map_handler['player']:
-                    player_sprite = Player((x, y))
+                    player_sprite = New_Player(Position(x, y),
+                                               1,
+                                               [30, 50],
+                                               "assets/textures/player/",
+                                               read_configured_actions()
+                                               )
                     self.player.add(player_sprite)
                 elif cell == self.map_handler['goal']:
                     goal_sprite = Goal((x, y), tile_size)
@@ -44,55 +51,49 @@ class World:
     def _scroll_x(self):
         player = self.player.sprite
         player_x = player.rect.centerx
-        direction_x = player.direction.x
-        if player_x < WIDTH // 3 and direction_x < 0:
+        if player_x < WIDTH // 3 and player.status == "walk" and player.position.dir_x < 0:
+            print("Shift left")
             self.world_shift = 8
-            player.speed = 0
-        elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
+        elif player_x > WIDTH - (WIDTH // 3) and player.status == "walk" and player.position.dir_x > 0:
+            print("Shift right")
             self.world_shift = -8
-            player.speed = 0
         else:
             self.world_shift = 0
-            player.speed = 3
-    
-    def _apply_gravity(self, player):
-        player.direction.y += self.gravity
-        player.rect.y += player.direction.y
 
     def _horizontal_movement_collision(self):
         player = self.player.sprite
-        player.rect.x += player.direction.x * player.speed
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
-                if player.direction.x < 0:
+                if player.position.dir_x < 0:
                     player.rect.left = sprite.rect.right
                     player.on_left = True
                     self.current_x = player.rect.left
-                elif player.direction.x > 0:
+                    player.position.clear_speed()
+                elif player.position.dir_x > 0:
                     player.rect.right = sprite.rect.left
                     player.on_right = True
                     self.current_x = player.rect.right
-        if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+                    player.position.clear_speed()
+        if player.on_left and (player.rect.left < self.current_x or player.position.dir_x > 0):
             player.on_left = False
-        if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+        if player.on_right and (player.rect.right > self.current_x or not player.position.dir_x < 0):
             player.on_right = False
 
     def _vertical_movement_collision(self):
         player = self.player.sprite
-        self._apply_gravity(player)
         for sprite in self.tiles.sprites():
             if sprite.rect.colliderect(player.rect):
-                if player.direction.y > 0:
+                if player.position.dir_y >= 0:
                     player.rect.bottom = sprite.rect.top
-                    player.direction.y = 0
+                    player.position.update_force([Force(0, -gravity)])
                     player.on_ground = True
-                elif player.direction.y < 0:
+                elif player.position.dir_y < 0:
                     player.rect.top = sprite.rect.bottom
-                    player.direction.y = 0
+                    player.position.clear_force()
                     player.on_ceiling = True
-        if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+        if player.on_ground and player.position.dir_y < 0 or player.position.dir_y > gravity:
             player.on_ground = False
-        if player.on_ceiling and player.direction.y > 0:
+        if player.on_ceiling and player.position.dir_y > 0:
             player.on_ceiling = False
 
     def _handle_traps(self):
@@ -100,12 +101,14 @@ class World:
         for sprite in self.traps.sprites():
             if sprite.rect.colliderect(player.rect):
                 # Go on the right to avoid continuous collision with trap
-                if player.direction.x < 0 or player.direction.y > 0:
+                if player.position.dir_x < 0 or player.position.dir_y > 0:
                     player.rect.x += tile_size
+                    player.position._x += tile_size
                 # Go on the left to avoid continuous collision with trap
-                elif player.direction.x > 0 or player.direction.y > 0:
+                elif player.position.dir_x > 0 or player.position.dir_y > 0:
                     player.rect.x -= tile_size
-                player.life -= 1
+                    player.position._y += tile_size
+                player.take_damage(2)
 
     def update(self, player_event):
         # tile

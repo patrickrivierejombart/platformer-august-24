@@ -1,6 +1,11 @@
 import pygame
 from utils.sprite_utils import import_sprite
-from settings import BG_IMG  # TO CHANGE
+from utils.utils_2d import Speed, Force
+from ENTITY.entity import Entity
+from typing import List
+import numpy as np
+from settings import PLAYER_JUMP, PLAYER_WALK_RIGHT, PLAYER_WALK_LEFT
+from settings import dt
 
 
 class Player(pygame.sprite.Sprite):
@@ -105,3 +110,64 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0
             self.status = "lose"
         self._animate()
+
+
+class New_Player(Entity):
+    sprite_path="assets/textures/player/"
+
+    def _import_character_assets(self, sprite_path):
+        """REDEFINE IN HERITAGE : use self.animations"""
+        character_path = sprite_path
+        self.animations = {
+            "fall": [],
+            "idle": [],
+            "jump": [],
+            "lose": [],
+            "walk": [],
+            "win": []
+        }
+        for animation in self.animations.keys():
+            full_path = character_path + animation
+            self.animations[animation] = import_sprite(full_path)
+
+    def _get_status(self):
+        if self.action_list["player_jump"].action_list:
+            self.status = "jump"
+        elif self.position.dir_x != 0:
+            self.status = "walk"
+        elif not self.on_ground:
+            self.status = "fall"
+        else:
+            self.status = "idle"
+
+    def _jump(self):
+        if self.on_ground:
+            self.action_list["player_jump"].trigger()
+
+    def _walk_right(self):
+        self.position.append_speed(Speed(self.base_speed, 0))
+        self.facing_right = True
+
+    def _walk_left(self):
+        self.position.append_speed(Speed(-self.base_speed, 0))
+        self.facing_right = False
+
+    def _play_actions(self):
+        self.position.append_forces([self.action_list[action_name].play() for action_name in self.action_list])
+
+    def _act(self, event):
+        self.position.clear_speed()
+        if self.status == "dead":
+            self.position.clear_force()
+            return
+        if event == PLAYER_JUMP:
+            self._jump()
+        if event == PLAYER_WALK_RIGHT:
+            self._walk_right()
+        if event == PLAYER_WALK_LEFT:
+            self._walk_left()
+        self._play_actions()
+        self.position.increment_position(dt)
+        self.position.clear_force()
+        self.rect.x = self.position.x
+        self.rect.y = self.position.y

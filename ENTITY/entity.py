@@ -1,7 +1,7 @@
 import pygame
 from utils.sprite_utils import import_sprite
-from utils.utils_2d import Position
-from typing import Tuple
+from utils.utils_2d import Position, Action
+from typing import Tuple, Dict
 
 
 class Entity(pygame.sprite.Sprite):
@@ -10,7 +10,7 @@ class Entity(pygame.sprite.Sprite):
                  lives: int, 
                  base_size: Tuple[int, int],
                  sprite_path: str,
-                 action_list: dict,
+                 action_list: Dict[str, Action],
                  animation_speed: float = 0.15,
                  base_hp: int = 5,
                  base_speed: int = 5,
@@ -105,6 +105,6 @@ class Entity(pygame.sprite.Sprite):
         """DEFINE IN HERITAGE : use self.action_list"""
 
     def update(self, event):
-        self._get_status()
         self._act(event)
+        self._get_status()
         self._animate()
