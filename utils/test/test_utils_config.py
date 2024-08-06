@@ -8,3 +8,4 @@ if __name__ == "__main__":
         while action.action_list:
             print(action.play().vector)
             action.trigger()
+    

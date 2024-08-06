@@ -6,6 +6,7 @@ from ENVIRONMENT.elements.goal import Goal
 from GUI.game import Game
 from ENTITY.player.player import Player
 from ENVIRONMENT.map_handler import MapHandler, Level
+from utils import utils_2d as utils
 
 
 class World:
@@ -19,6 +20,7 @@ class World:
         self.current_x = 0
         self.gravity = 0.7
         self.game = Game(self.screen)
+        self.overall_speed = 8
     
     def _setup_world(self, layout):
         self.tiles = pygame.sprite.Group()
@@ -41,22 +43,27 @@ class World:
                     goal_sprite = Goal((x, y), tile_size)
                     self.goal.add(goal_sprite)
     
+    
     def _scroll_x(self):
         player = self.player.sprite
         player_x = player.rect.centerx
         direction_x = player.direction.x
         if player_x < WIDTH // 3 and direction_x < 0:
-            self.world_shift = 8
+            self.world_shift = self.overall_speed
             player.speed = 0
         elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
-            self.world_shift = -8
+            self.world_shift = -self.overall_speed
             player.speed = 0
         else:
             self.world_shift = 0
-            player.speed = 3
+            player.speed = self.overall_speed
     
-    def _apply_gravity(self, player):
-        player.direction.y += self.gravity
+    def _apply_gravity(self, player: Player):
+        pos_x0 = utils.Position(player.direction.x, player.direction.y)
+        pos_x0.update_force(force_list=[utils.Force(0, 1)])
+        pos_x0.update_speed(speed_list=[utils.Speed(0, 0)])
+        pos_x0.increment_position(dt = 1)
+        player.direction.y = pos_x0.y
         player.rect.y += player.direction.y
 
     def _horizontal_movement_collision(self):

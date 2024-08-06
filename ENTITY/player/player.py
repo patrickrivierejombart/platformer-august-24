@@ -1,9 +1,12 @@
+from ctypes import util
 import pygame
 from utils.sprite_utils import import_sprite
 from settings import BG_IMG  # TO CHANGE
+from utils import utils_2d as utils
+from utils import utils_config as cutils
 
 
-class Player(pygame.sprite.Sprite):
+class Past_Player(pygame.sprite.Sprite):
     def __init__(self, pos):  # + sprite_path TODO
         super().__init__()
         self._import_character_assets()
@@ -81,6 +84,7 @@ class Player(pygame.sprite.Sprite):
     def _jump(self):
         self.direction.y = self.jump_move
 
+
     def _get_status(self):
         if self.direction.y < 0:
             self.status = "jump"
@@ -105,3 +109,21 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0
             self.status = "lose"
         self._animate()
+
+class Player(Past_Player):
+    def __init__(self, pos, dt = 1):
+        super().__init__(pos)
+        self.jump_move = -100
+        self.dt = dt
+    
+    def _jump(self, index = 0):
+        action_list = cutils.read_configured_actions()
+        jump_action: cutils.Action = action_list["jump"]
+        if not jump_action.action_list:
+            jump_action.trigger()
+        force = jump_action.play()
+        pos = utils.Position(self.direction.x, self.direction.y)
+        pos.update_force([force])
+        pos.update_speed([utils.Speed(0,0)])
+        pos.increment_position(self.dt)
+        self.direction.y = pos.y
