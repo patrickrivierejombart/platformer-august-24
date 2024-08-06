@@ -9,7 +9,7 @@ from ENVIRONMENT.map_handler import MapHandler, Level
 from utils import utils_2d as utils
 
 
-class Past_World:
+class World:
     def __init__(self, level: Level, screen: pygame.Surface):
         self.screen = screen
         self.map_handler = MapHandler()
