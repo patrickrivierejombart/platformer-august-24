@@ -54,8 +54,8 @@ class Position(Vector2D):
         self.force_list = force_list
     
     def increment_position(self, dt):
-        vit = np.sum([force.vector for force in self.force_list], axis = 0) * dt + np.sum([speed.vector for speed in self.speed_list], axis = 0)
-        pos = self.vector + vit * dt / 2
+        vit = [np.sum([force.vector for force in self.force_list], axis = 0) * dt, np.sum([speed.vector for speed in self.speed_list], axis = 0)]
+        pos = self.vector + vit[0] * dt / 2 + vit[1] * dt
         self._x = pos[0]
         self._y = pos[1]
 
