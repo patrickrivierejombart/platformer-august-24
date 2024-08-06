@@ -9,7 +9,7 @@ from ENVIRONMENT.map_handler import MapHandler, Level
 from utils import utils_2d as utils
 
 
-class World:
+class Past_World:
     def __init__(self, level: Level, screen: pygame.Surface):
         self.screen = screen
         self.map_handler = MapHandler()
@@ -58,12 +58,8 @@ class World:
             self.world_shift = 0
             player.speed = self.overall_speed
     
-    def _apply_gravity(self, player: Player):
-        pos_x0 = utils.Position(player.direction.x, player.direction.y)
-        pos_x0.update_force(force_list=[utils.Force(0, 1)])
-        pos_x0.update_speed(speed_list=[utils.Speed(0, 0)])
-        pos_x0.increment_position(dt = 1)
-        player.direction.y = pos_x0.y
+    def _apply_gravity(self, player):
+        player.direction.y += self.gravity
         player.rect.y += player.direction.y
 
     def _horizontal_movement_collision(self):
@@ -133,3 +129,15 @@ class World:
         self.game.show_life(self.player.sprite)
         self.player.draw(self.screen)
         self.game.game_state(self.player.sprite, self.goal.sprite)
+
+class World(Past_World):
+    def __init__(self, level: Level, screen: pygame.Surface):
+        super().__init__(level, screen)
+
+    def _apply_gravity(self, player):
+        pos_x0 = utils.Position(player.direction.x, player.direction.y)
+        pos_x0.update_force(force_list=[utils.Force(0, 1)])
+        pos_x0.update_speed(speed_list=[utils.Speed(0, 0)])
+        pos_x0.increment_position(dt = 1)
+        player.direction.y = pos_x0.y
+        player.rect.y += player.direction.y

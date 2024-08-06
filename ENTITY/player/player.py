@@ -111,19 +111,12 @@ class Past_Player(pygame.sprite.Sprite):
         self._animate()
 
 class Player(Past_Player):
-    def __init__(self, pos, dt = 1):
+    def __init__(self, pos, action_list, dt = 1):
         super().__init__(pos)
-        self.jump_move = -100
         self.dt = dt
+        self.action_list = action_list
     
     def _jump(self, index = 0):
         action_list = cutils.read_configured_actions()
         jump_action: cutils.Action = action_list["jump"]
-        if not jump_action.action_list:
-            jump_action.trigger()
-        force = jump_action.play()
-        pos = utils.Position(self.direction.x, self.direction.y)
-        pos.update_force([force])
-        pos.update_speed([utils.Speed(0,0)])
-        pos.increment_position(self.dt)
-        self.direction.y = pos.y
+        jump_action.trigger()
