@@ -2,10 +2,7 @@ from ENTITY.entity import Entity
 from utils.utils_2d import Position
 from typing import Literal
 import math
-import pygame
 
-pygame.init()
-screen = pygame.display.set_mode((800, 600))
 
 class Mob(Entity):
     sprite_path="assets/textures/mob/"
@@ -29,7 +26,6 @@ class Mob(Entity):
             player_position.x <= self.position.x + threshold and\
             player_position.y >= self.position.y - y_offset and\
             player_position.y <= self.position.y + y_offset
-
 
     def los(self, player_position: Position, threshold: int = 5, los_type: Literal["circular", "vertical", "horizontal"] = "circular") -> bool:
         if los_type == "circular":
