@@ -34,6 +34,8 @@ class GAME_NAME_HERE:
                         self.player_event = "right"
                     if event.key == pygame.K_SPACE:
                         self.player_event = "space"
+                    if event.key == pygame.K_ESCAPE:
+                        self.player_event = "escape"
                 elif event.type == pygame.KEYUP:
                     self.player_event = False
             world.update(self.player_event)

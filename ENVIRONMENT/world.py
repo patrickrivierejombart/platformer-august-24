@@ -126,3 +126,6 @@ class World:
         self.game.show_life(self.player.sprite)
         self.player.draw(self.screen)
         self.game.game_state(self.player.sprite, self.goal.sprite)
+        self.game.startMenu_state(self.screen)
+        self.game.optionMenu_state(self.screen)
+        if(player_event == "escape"): self.game.showOptionMenu = True
