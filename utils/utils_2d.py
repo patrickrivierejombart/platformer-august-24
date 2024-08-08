@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import numpy as np
 from settings import gravity
+from pygame.math import Vector2
 
 
 class Utils2DException(Exception):
@@ -28,6 +29,10 @@ class Vector2D:
     @property
     def vector(self):
         return np.array([self._x, self._y])
+
+    def update(self, x: float, y: float):
+            self._x = x
+            self._y = y
 
 
 class Force(Vector2D):
@@ -77,41 +82,62 @@ class Position(Vector2D):
     def append_forces(self, forces: List[Force]):
         self.force_list.extend(forces)
 
-    def clear_force(self):
-        self.force_list = [Force(0, 0)]
+    def clear_force_x(self):
+        for force in self.force_list:
+            force._x = 0
+
+    def clear_force_y(self):
+        for force in self.force_list:
+            force._y = 0
 
     def get_speed(self):
         return np.sum([speed.vector for speed in self.speed_list], axis = 0)
 
     def get_force(self):
-        return np.sum([force.vector for force in self.force_list], axis = 0) + self.gravity.vector
+        return np.sum([force.vector for force in self.force_list], axis = 0)
     
-    def increment_position(self, dt):
+    def increment_position(self):
         speed = self.get_speed()
         force = self.get_force()
-        vit = [force * dt, speed]
-        increment_pos = vit[0] * dt / 2 + vit[1] * dt
+        # vit = [force, speed]
+        # increment_pos = vit[0] * dt / 2 + vit[1] * dt
+        increment_pos = force / 2 + speed
         pos = self.vector + increment_pos
-        self._x = pos[0]
-        self._y = pos[1]
         self._direction_x = increment_pos[0]
         self._direction_y = increment_pos[1]
+        return pos
+        self._x = pos[0]
+        self._y = pos[1]
 
 
 class Action:
     """
     """
-    def __init__(self, action_name: str, vector_list: List[Force]):
+    def __init__(self, action_name: str, vector_list: List[Vector2]):
         self.action_name = action_name
-        self.action_list: List[Force] = vector_list
-        self.active_action_list: List[Force] = list()
+        self.action_list: List[Vector2] = vector_list
+        self.active_action_list: List[Vector2] = [Vector2(0, 0)]
+        self.was_triggered = False
     
     def trigger(self):
-        if not self.active_action_list:
-            self.active_action_list = self.action_list.copy()
+        self.was_triggered = True
+        self.active_action_list = self.action_list.copy()
+    
+    def load(self):
+        self.was_triggered = False
+        self.active_action_list = self.action_list.copy()
+    
+    def unload(self):
+        self.active_action_list = [Vector2(0, 0)]
 
     def play(self):
+        if not self.was_triggered:
+            return self.active_action_list[0]
         if self.active_action_list:
-            play_force: Force = self.active_action_list.pop(0)
+            play_force: Vector2 = self.active_action_list.pop(0)
             return play_force
-        return Force(0, 0)
+        return Vector2(0, 0)
+        if self.active_action_list:
+            play_force: Vector2 = self.active_action_list.pop(0)
+            return play_force
+        return Vector2(0, 0)

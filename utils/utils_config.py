@@ -1,5 +1,6 @@
 from utils.utils_2d import Action, Force
 from typing import Dict
+from pygame.math import Vector2
 
 
 def read_configured_actions() -> Dict[str, Action]:
@@ -16,7 +17,7 @@ def read_configured_actions() -> Dict[str, Action]:
             action_name: Action(
                 action_name=action_name,
                 vector_list=[
-                    Force.from_tuple((actions_yaml[action_name][idx]))
+                    Vector2((actions_yaml[action_name][idx]))
                     for idx in range(len(actions_yaml[action_name]))
                     ]
                 )

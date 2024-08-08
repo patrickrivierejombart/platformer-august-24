@@ -1,5 +1,6 @@
 import pygame
 from utils.sprite_utils import import_sprite
+from utils.utils_2d import Position
 
 
 class Trap(pygame.sprite.Sprite):
@@ -12,6 +13,7 @@ class Trap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (size, size))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=pos)
+        self.position = Position(pos[0], pos[1])
     
     def _animate(self):
         """
@@ -26,6 +28,7 @@ class Trap(pygame.sprite.Sprite):
         if self.frame_index // self.animation_delay > len(sprites):
             self.frame_index = 0
     
-    def update(self, x_shift):
+    def update(self, x_shift, y_shift):
         self._animate()
-        self.rect.x += x_shift
+        self.rect.x = self.position.x - x_shift
+        self.rect.y = self.position.y - y_shift
