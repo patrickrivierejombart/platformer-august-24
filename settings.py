@@ -4,7 +4,7 @@ player_size_x = 40
 player_size_y = 60
 BG_IMG = 'assets/textures/terrain/bg.jpg'
 # Game pace
-dt = 0.6
+dt = 1
 
 # Environment forces
 gravity = 1

@@ -15,8 +15,8 @@ class Entity(pygame.sprite.Sprite):
                  action_list: Dict[str, Action],
                  animation_speed: float = 0.15,
                  base_hp: int = 5,
-                 base_speed: int = 3,
-                 base_jump: int = 15,
+                 base_speed: int = 5,
+                 base_jump: int = 18,
                  base_strength: int = 5,
                  base_intelligence: int = 5,
                  base_defense: int = 5,
@@ -139,10 +139,11 @@ class Entity(pygame.sprite.Sprite):
             return current - _dt
         return goal
 
-    def update(self, event):
+    def update(self, event, x_shift):
         self._act(event)
         self.velocity_float_x = round(self._approachX(self.velocity_goal.x, self.velocity_float_x), 2)
         self.velocity_float_y = round(self._approachY(self.velocity_goal.y, self.velocity_float_y), 2)
         self.velocity.x, self.velocity.y = int(self.velocity_float_x), int(self.velocity_float_y)
+        self.rect.x += x_shift 
         self._get_status()
         self._animate()

@@ -52,21 +52,17 @@ class World:
                     self.goal.add(goal_sprite)
     
     def _scroll_x(self):
-        """
         player = self.player.sprite
         player_x = player.rect.centerx
-        print(f"x: {player_x}")
-        print(f"dir_x: {player.position.dir_x}")
-        print(f"st: {player.status}")
-        if player_x < WIDTH // 3 and player.status == "walk" and player.position.dir_x < 0:
-            print("Shift left")
-            self.world_shift = player.position.x
-        elif player_x > WIDTH - (WIDTH // 3) and player.status == "walk" and player.position.dir_x > 0:
-            print("Shift right")
-            self.world_shift = -player.position.x
+        direction_x = player.velocity.x
+        if player_x < WIDTH // 3 and direction_x < 0:
+            self.world_shift = -player.velocity.x
+            player.velocity.x = 0
+        elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
+            self.world_shift = -player.velocity.x
+            player.velocity.x = 0
         else:
-            self.world_shift = 0
-        """
+            'self.world_shift = -player.velocity.x * 0.5'  # TODO
 
     def _horizontal_movement_collision(self):
         player = self.player.sprite
@@ -76,11 +72,13 @@ class World:
                 if player.velocity.x < 0:
                     player.rect.left = sprite.rect.right
                     player.velocity.x = 0
+                    player.velocity_float_x = 0
                     player.on_left = True
                     self.current_x = player.rect.left
                 elif player.velocity.x > 0:
                     player.rect.right = sprite.rect.left
                     player.velocity.x = 0
+                    player.velocity_float_x = 0
                     player.on_right = True
                     self.current_x = player.rect.right
         if player.on_left and (player.rect.left < self.current_x or player.velocity.x >= 0):
@@ -123,17 +121,17 @@ class World:
 
     def update(self, player_event):
         # player
-        self.player.update(player_event)  # self.camera.offset.y)
+        self.player.update(player_event, self.world_shift)  # self.camera.offset.y)
         self._horizontal_movement_collision()
         self._vertical_movement_collision()
         # tile
-        self.tiles.update(self.camera.offset.x, self.camera.offset.y)
+        self.tiles.update(self.world_shift)
         self.tiles.draw(self.screen)
         # trap
-        self.traps.update(self.camera.offset.x, self.camera.offset.y)
+        self.traps.update(self.world_shift)
         self.traps.draw(self.screen)
         # goal
-        self.goal.update(self.camera.offset.x, self.camera.offset.y)
+        self.goal.update(self.world_shift)
         self.goal.draw(self.screen)
         self._scroll_x()
         # self._handle_traps()
