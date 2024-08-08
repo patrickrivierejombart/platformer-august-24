@@ -61,7 +61,12 @@ class World:
         elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
             self.world_shift = -player.velocity.x
             player.velocity.x = 0
+        elif direction_x < 0:
+            self.world_shift = 1
+        elif direction_x > 0:
+            self.world_shift = -1
         else:
+            self.world_shift = 0
             'self.world_shift = -player.velocity.x * 0.5'  # TODO
 
     def _horizontal_movement_collision(self):
