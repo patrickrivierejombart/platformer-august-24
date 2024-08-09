@@ -18,7 +18,7 @@ class GAME_NAME_HERE:
         self.player_event = False
         self.bg_img = pygame.image.load(BG_IMG)
         self.bg_img = pygame.transform.scale(self.bg_img, (width, height))
-    
+
     def main(self):
         world = World(level=Level1(), screen=self.screen)
         while True:
@@ -35,7 +35,12 @@ class GAME_NAME_HERE:
                     if event.key == pygame.K_SPACE:
                         self.player_event = "space"
                 elif event.type == pygame.KEYUP:
-                    self.player_event = False
+                    if event.key == pygame.K_LEFT:
+                        self.player_event = "no_left"
+                    if event.key == pygame.K_RIGHT:
+                        self.player_event = "no_right"
+                    if event.key == pygame.K_SPACE:
+                        self.player_event = "no_space"
             world.update(self.player_event)
             pygame.display.update()
             self.clock.tick(60)

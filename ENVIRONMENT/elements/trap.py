@@ -1,9 +1,10 @@
 import pygame
 from utils.sprite_utils import import_sprite
+from pygame.math import Vector2
 
 
 class Trap(pygame.sprite.Sprite):
-    def __init__(self, pos, size):  # + sprite_path TODO
+    def __init__(self, pos, size):
         super().__init__()
         self.trap_img = import_sprite("assets/textures/trap/blade/")
         self.frame_index = 0
@@ -12,6 +13,7 @@ class Trap(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (size, size))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=pos)
+        self.position = Vector2(pos[0], pos[1])
     
     def _animate(self):
         """
