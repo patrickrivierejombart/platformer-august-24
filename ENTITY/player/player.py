@@ -22,6 +22,7 @@ class Player(Entity):
             self.animations[animation] = import_sprite(full_path)
 
     def _get_status(self):
+        # Get player active status
         if self.velocity.y < 0:
             self.status = "jump"
         elif self.velocity.x != 0:
@@ -32,12 +33,14 @@ class Player(Entity):
             self.status = "idle"
 
     def _jump(self, do_jump: bool):
+        # Player jump if on_ground
         if not self.on_ground:
             return
-        if do_jump:
+        if do_jump and not self.status == "jump":
             self.velocity_goal.y = -self.jump
 
     def _walk_right(self, do_walk_right: bool):
+        # Walk and face right
         if do_walk_right:
             self.facing_right = True
             self.velocity_goal.x = self.speed
@@ -45,6 +48,7 @@ class Player(Entity):
             self.velocity_goal.x = 0
 
     def _walk_left(self, do_walk_left: bool):
+        # Walk and face left
         if do_walk_left:
             self.facing_right = False
             self.velocity_goal.x = -self.speed
@@ -52,16 +56,16 @@ class Player(Entity):
             self.velocity_goal.x = 0
 
     def _act(self, event):
-        if self.status == "dead":
+        if self.status == "dead":  # if dead, don't act
             return
-        
+        # ACT
         if event == PLAYER_JUMP:
             self._jump(True)
         if event == PLAYER_WALK_RIGHT:
             self._walk_right(True)
         if event == PLAYER_WALK_LEFT:
             self._walk_left(True)
-        
+        # STOP ACTING
         if event == STOP_PLAYER_JUMP:
             self._jump(False)
         if event == STOP_PLAYER_WALK_RIGHT:

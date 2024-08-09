@@ -7,7 +7,6 @@ from GUI.game import Game
 from ENTITY.player.player import Player
 from ENVIRONMENT.map_handler import MapHandler, Level
 from pygame.math import Vector2
-from utils.utils_config import read_configured_actions
 from settings import dt, player_size_x, player_size_y
 from ENVIRONMENT.camera import *
 
@@ -41,8 +40,7 @@ class World:
                     player_sprite = Player(Vector2(x, y),
                                                4,
                                                [player_size_x, player_size_y],
-                                               "assets/textures/player/",
-                                               read_configured_actions()
+                                               "assets/textures/player/"
                                                )
                     self.camera = Camera(player_sprite)
                     self.camera.setmethod(Follow(self.camera, player_sprite))
@@ -104,8 +102,9 @@ class World:
                     player.on_ground = True
                 elif player.velocity.y < 0:
                     player.rect.top = sprite.rect.bottom
-                    player.velocity.y = 0
-                    player.velocity_float_y = 0
+                    player.velocity.y = 1
+                    player.velocity_float_y = 1
+                    player.velocity_goal.y = 1
                     player.on_ceiling = True
         if player.on_ground and player.velocity.y < 0:
             player.on_ground = False

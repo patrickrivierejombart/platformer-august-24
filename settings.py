@@ -1,7 +1,7 @@
-WIDTH, HEIGHT = 1000, 900
-tile_size = 70
+WIDTH, HEIGHT = 1920, 1080
+tile_size = 50
 player_size_x = 40
-player_size_y = 60
+player_size_y = 88
 BG_IMG = 'assets/textures/terrain/bg.jpg'
 # Game pace
 dt = 1

@@ -1,8 +1,7 @@
 import pygame
 from utils.sprite_utils import import_sprite
-from utils.utils_2d import Action
 from pygame.math import Vector2
-from typing import Tuple, Dict
+from typing import Tuple
 from settings import gravity, dt
 
 
@@ -12,7 +11,6 @@ class Entity(pygame.sprite.Sprite):
                  lives: int, 
                  base_size: Tuple[int, int],
                  sprite_path: str,
-                 action_list: Dict[str, Action],
                  animation_speed: float = 0.15,
                  base_hp: int = 5,
                  base_speed: int = 5,
@@ -38,8 +36,6 @@ class Entity(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=position)
         self.mask = pygame.mask.from_surface(self.image)
         self.base_size = base_size
-        # player actions
-        self.action_list = action_list
         # player movement
         self.direction = pygame.math.Vector2(0, 0)
         self.base_hp = base_hp
@@ -77,6 +73,7 @@ class Entity(pygame.sprite.Sprite):
             self.animations[animation] = import_sprite(full_path)
 
     def _animate(self):
+        # Animate the entity sprite
         animation = self.animations[self.status]
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
@@ -103,6 +100,7 @@ class Entity(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midtop=self.rect.midtop)
 
     def take_damage(self, attack):
+        # Deal damage to the entity
         self.hp -= attack**2 / self.base_defense
         if self.hp < 1:
             self.lives -= 1
@@ -117,9 +115,10 @@ class Entity(pygame.sprite.Sprite):
         when going from one status to the other, reset self.frame_index"""
 
     def _act(self, event):
-        """DEFINE IN HERITAGE : use self.action_list"""
+        """DEFINE IN HERITAGE"""
 
     def _approachX(self, goal: float, current: float):
+        # Interpolate velocity towards a velocity_goal along X
         _dt = dt
         _dt *= self.speed  # * 40 / 100
         diff = goal - current
@@ -130,8 +129,9 @@ class Entity(pygame.sprite.Sprite):
         return goal
 
     def _approachY(self, goal: float, current: float):
+        # Interpolate velocity towards a velocity_goal along Y
         _dt = dt
-        _dt *= self.base_jump  # * 40 / 100
+        _dt *= self.base_jump
         diff = goal - current
         if diff > _dt:
             return current + _dt
@@ -140,6 +140,7 @@ class Entity(pygame.sprite.Sprite):
         return goal
 
     def update(self, event, x_shift):
+        # Update entity position and velocity : operate active actions
         self._act(event)
         self.velocity_float_x = round(self._approachX(self.velocity_goal.x, self.velocity_float_x), 2)
         self.velocity_float_y = round(self._approachY(self.velocity_goal.y, self.velocity_float_y), 2)
