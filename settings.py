@@ -1,13 +1,13 @@
 WIDTH, HEIGHT = 1920, 1080
-tile_size = 50
-player_size_x = 40
-player_size_y = 88
+tile_size = 60
+player_size_x = 50
+player_size_y = 100
 BG_IMG = 'assets/textures/terrain/bg.jpg'
 # Game pace
-dt = 1
+dt = 0.016
 
 # Environment forces
-gravity = 1
+gravity = 50000000000
 
 # Player Controls
 PLAYER_JUMP = "space"

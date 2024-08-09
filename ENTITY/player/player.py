@@ -23,9 +23,9 @@ class Player(Entity):
 
     def _get_status(self):
         # Get player active status
-        if self.velocity.y < 0:
+        if self.velocity_goal_float_y < 0:
             self.status = "jump"
-        elif self.velocity.x != 0:
+        elif self.velocity_goal_float_x != 0:
             self.status = "walk"
         elif not self.on_ground:
             self.status = "fall"
@@ -37,23 +37,23 @@ class Player(Entity):
         if not self.on_ground:
             return
         if do_jump and not self.status == "jump":
-            self.velocity_goal.y = -self.jump
+            self.velocity_goal_float_y = -self.jump
 
     def _walk_right(self, do_walk_right: bool):
         # Walk and face right
         if do_walk_right:
             self.facing_right = True
-            self.velocity_goal.x = self.speed
-        elif self.velocity_goal.x > 0:
-            self.velocity_goal.x = 0
+            self.velocity_goal_float_x = self.speed
+        elif self.velocity_goal_float_x > 0:
+            self.velocity_goal_float_x = 0
 
     def _walk_left(self, do_walk_left: bool):
         # Walk and face left
         if do_walk_left:
             self.facing_right = False
-            self.velocity_goal.x = -self.speed
-        elif self.velocity_goal.x < 0:
-            self.velocity_goal.x = 0
+            self.velocity_goal_float_x = -self.speed
+        elif self.velocity_goal_float_x < 0:
+            self.velocity_goal_float_x = 0
 
     def _act(self, event):
         if self.status == "dead":  # if dead, don't act

@@ -28,6 +28,7 @@ class Trap(pygame.sprite.Sprite):
         if self.frame_index // self.animation_delay > len(sprites):
             self.frame_index = 0
     
-    def update(self, x_shift):
+    def update(self, x_shift, y_shift):
         self._animate()
         self.rect.x += x_shift
+        self.rect.y += y_shift

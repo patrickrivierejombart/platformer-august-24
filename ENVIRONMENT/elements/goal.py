@@ -11,5 +11,6 @@ class Goal(pygame.sprite.Sprite):  # add sprite path
         self.rect = self.image.get_rect(topleft=pos)
         self.position = Vector2(pos[0], pos[1])
     
-    def update(self, x_shift):
+    def update(self, x_shift, y_shift):
         self.rect.x += x_shift
+        self.rect.y += y_shift

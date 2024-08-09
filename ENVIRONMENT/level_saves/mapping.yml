@@ -6,7 +6,8 @@
 'C': 'checkpoint'
 ' ': 'empty'
 # TODO : translate the ones above into the ones under
-'tile': '#'
+'top_tile': '~'
+'mid_tile': '#'
 'trap': 't'
 'player': 'P'
 'goal': 'G'
