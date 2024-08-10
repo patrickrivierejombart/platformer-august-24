@@ -1,41 +1,43 @@
-import pygame
-vec = pygame.math.Vector2
-from settings import WIDTH, HEIGHT
 from abc import ABC, abstractmethod
+from ENTITY.player.player import Player
+from pygame import Surface
 
 
-class Camera:
-    def __init__(self, player):
-        self.player = player
-        self.offset_float_x = 0
-        self.offset_float_y = 0
-        self.offset = vec(int(self.offset_float_x), int(self.offset_float_y))
-        self.DISPLAY_W, self.DISPLAY_H = WIDTH, HEIGHT
-        self.CONST = vec(0, 0)
-        # self.CONST = vec(-self.DISPLAY_W / 2 + player.rect.w / 2, -self.player.rect.y + 20)
-    
+class Camera:    
     def setmethod(self, method):
         self.method = method
 
     def scroll(self):
         self.method.scroll()
+    
+    def render_scroll(self):
+        return self.method.render_scroll()
 
 
 class CamScroll(ABC):
-    def __init__(self, camera, player):
-        self.camera = camera
+    def __init__(self, player: Player, display: Surface):
         self.player = player
-
+        self.display = display
+        self.offset = [0, 0]
+    
     @abstractmethod
     def scroll(self):
         pass
 
+    @abstractmethod
+    def render_scroll(self):
+        pass
+
 
 class Follow(CamScroll):
-    def __init__(self, camera, player):
-        CamScroll.__init__(self, camera, player)
+    def __init__(self, player, display):
+        CamScroll.__init__(self, player, display)
     
     def scroll(self):
-        self.camera.offset_float_x = (self.player.position_float_x - self.player.rect.x + self.camera.CONST.x)
-        self.camera.offset_float_y = (self.player.position_float_y - self.player.rect.y + self.camera.CONST.y)
-        self.camera.offset.x, self.camera.offset.y = int(self.camera.offset_float_x), int(self.camera.offset_float_y)
+        self.offset[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.offset[0]) / 30
+        self.offset[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.offset[1]) / 30
+        print(self.offset)
+
+    def render_scroll(self):
+        print(self.offset)
+        return (int(self.offset[0]), int(self.offset[1]))
