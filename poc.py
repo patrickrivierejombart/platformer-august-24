@@ -22,6 +22,7 @@ class GAME_NAME_HERE:
 
         self.assets = {
             'sand': load_images('terrain/sand'),
+            'sand_decor': load_images('terrain/sand_decor'),
             'background': load_image('background.jpg')
         }
 
