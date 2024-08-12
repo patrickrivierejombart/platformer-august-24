@@ -1,7 +1,8 @@
 WIDTH, HEIGHT = 1920, 1080
 tile_size = 16
-player_size_x = 12
-player_size_y = 30
+player_size_x = 32
+player_size_y = 32
+tile_to_character_ratio = 2
 BG_IMG = 'assets/textures/terrain/bg.jpg'
 # Game pace
 dt = 0.016

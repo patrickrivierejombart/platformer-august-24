@@ -1,7 +1,7 @@
 import pygame
 from utils.texture_utils import import_sprite
 from typing import Tuple
-from settings import gravity, dt, player_walk_speed, player_jump_speed
+from settings import gravity, dt, player_walk_speed, player_jump_speed, tile_to_character_ratio
 from ENVIRONMENT.elements.tilemap import Tilemap
 
 
@@ -33,6 +33,7 @@ class PhysicsEntity:
         self.image = self.animations["idle"][self.frame_index].convert_alpha()
         self.base_size = base_size
         self.size = [self.base_size[0], self.base_size[1]]
+        self.moving_left = False
         # player movement
         self.moving_x = [False, False]
         self.moving_y = [False, False]
@@ -55,7 +56,7 @@ class PhysicsEntity:
         self.previous_time = 0
     
     def rect(self):
-        return pygame.Rect(self.position_int[0], self.position_int[1], self.size[0], self.size[1])
+        return pygame.Rect(self.position_int[0], self.position_int[1], self.size[0] // tile_to_character_ratio, self.size[1] // tile_to_character_ratio)
     
     def update(self, tilemap: Tilemap, event, surf, offset):
         self._act(event)
@@ -120,7 +121,9 @@ class PhysicsEntity:
 
         
     def render(self, surf, offset=(0, 0)):
-        surf.blit(self.image, (self.position_int[0] - offset[0], self.position_int[1] - offset[1]))
+        posX = self.position_int[0] - offset[0] #  tile_to_character_ratio * self.position_int[0]
+        posY = self.position_int[1] - offset[1] #  tile_to_character_ratio * self.position_int[1]
+        surf.blit(self.image, (posX * tile_to_character_ratio, posY * tile_to_character_ratio))
 
     def take_damage(self, attack):
         # Deal damage to the entity
@@ -183,8 +186,8 @@ class PhysicsEntity:
             self.frame_index = 0
         image = animation[int(self.frame_index)]
         image = pygame.transform.scale(image, (self.size[0], self.size[1]))
-        if self.moving_x[1]:
-            self.image = image
-        else:
+        if self.moving_left:
             flipped_image = pygame.transform.flip(image, True, False)
             self.image = flipped_image
+        else:
+            self.image = image

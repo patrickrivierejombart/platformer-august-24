@@ -22,15 +22,18 @@ class Player(PhysicsEntity):
             self.animations[animation] = import_sprite(full_path)
 
     def _get_status(self):
+        """
+        elif not self.collisions['down'] and self.velocity_float[1] > 0:
+            self.status = "fall"
+        """
         # Get player active status
         if self.velocity_float[1] < 0:
             self.status = "jump"
         elif self.velocity_float[0] != 0 and self.collisions['down']:
             self.status = "walk"
-        elif not self.collisions['down']:
-            self.status = "fall"
         else:
             self.status = "idle"
+        print(self.status)
 
     def _jump(self, do_jump: bool):
         # Player jump if on_ground
@@ -44,9 +47,11 @@ class Player(PhysicsEntity):
 
     def _walk_right(self, do_walk_right: bool):
         self.moving_x[1] = do_walk_right
+        self.moving_left = False
 
     def _walk_left(self, do_walk_left: bool):
         self.moving_x[0] = do_walk_left
+        self.moving_left = True
 
     def _act(self, event):
         if self.status == "dead":  # if dead, don't act

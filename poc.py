@@ -14,8 +14,9 @@ class GAME_NAME_HERE:
 
         pygame.display.set_caption("Game POC")
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.display = pygame.Surface((WIDTH/4, HEIGHT/4))
-
+        self.display = pygame.Surface((WIDTH//4, HEIGHT//4))
+        self.character_layer = pygame.Surface((WIDTH//2, HEIGHT//2), pygame.SRCALPHA)
+        
         self.clock = pygame.time.Clock()
 
         self.player_event = False
@@ -30,7 +31,8 @@ class GAME_NAME_HERE:
             (250, 200), 
             4, 
             (player_size_x, player_size_y), 
-            "assets/textures/player/"
+            "assets/textures/player/",
+            animation_speed=0.08
         )
 
         self.tilemap = Tilemap(self, tile_size=tile_size)
@@ -42,6 +44,7 @@ class GAME_NAME_HERE:
     def run(self):
         while True:
             self.display.fill((0, 0, 0), (0, 0, WIDTH, HEIGHT))
+            self.character_layer.fill((0, 0, 0, 0), (0, 0, WIDTH, HEIGHT))
 
             self.camera.scroll()
             render_scroll = self.camera.render_scroll()
@@ -49,7 +52,7 @@ class GAME_NAME_HERE:
             self.tilemap.render(self.display, offset=render_scroll)
 
             self.player.update(self.tilemap, self.player_event, self.display, offset=render_scroll)
-            self.player.render(self.display, offset=render_scroll)
+            self.player.render(self.character_layer, offset=render_scroll)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -71,6 +74,7 @@ class GAME_NAME_HERE:
                         self.player_event = "no_space"
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.screen.blit(pygame.transform.scale(self.character_layer, self.screen.get_size()), (0, 0))
             pygame.display.update()
             self.clock.tick(60)
 
