@@ -1,7 +1,7 @@
 # Ratio and size
 WIDTH, HEIGHT = 1920, 1080
-TILE_DISPLAY_WIDTH, TILE_DISPLAY_HEIGHT = 480, 270
-CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT = 960, 540
+TILE_DISPLAY_WIDTH, TILE_DISPLAY_HEIGHT = 240, 135  # 480, 270
+CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT = 480, 270  # 960, 540
 tile_size = 16
 player_size_x = 32
 player_size_y = 32
@@ -24,4 +24,4 @@ STOP_PLAYER_WALK_LEFT = "no_left"
 
 # Player movement speed
 player_jump_speed = 8 * tile_size  # 500
-player_walk_speed = 1.35 * tile_size  # 1.35 m/s
+player_walk_speed = 1.75 * tile_size  # 1.35 m/s

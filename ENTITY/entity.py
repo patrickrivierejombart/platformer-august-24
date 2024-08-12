@@ -1,8 +1,9 @@
 import pygame
 from utils.texture_utils import import_sprite
 from typing import Tuple
-from settings import gravity, dt, player_walk_speed, player_jump_speed, tile_to_character_ratio
+from settings import gravity, dt, player_walk_speed, player_jump_speed, tile_to_character_ratio, tile_size
 from ENVIRONMENT.elements.tilemap import Tilemap
+from math import cos, sin
 
 
 class PhysicsEntity:
@@ -117,7 +118,7 @@ class PhysicsEntity:
             self.velocity_goal_float[1] = 0
             self.velocity_float[1] = 0
         
-        self._get_status()
+        self._get_status(tilemap=tilemap)
         self._animate()
 
         
@@ -175,7 +176,7 @@ class PhysicsEntity:
             return current - _dt
         return goal
 
-    def _get_status(self):
+    def _get_status(self, tilemap: Tilemap):
         """DEFINE IN HERITAGE : use self.status
         when going from one status to the other, reset self.frame_index"""
     
@@ -192,3 +193,23 @@ class PhysicsEntity:
             self.image = flipped_image
         else:
             self.image = image
+    
+    def _raycast(self, angle, min_depth, depth, tilemap: Tilemap):
+        depth = min(tile_size*3, depth)  # depth cannot go over 3 tiles (limit load on cpu)
+        if -45 < angle <= 45:
+            origin = self.rect().right, self.rect().centery
+        elif 45 < angle <= 135:
+            origin = self.rect().centerx, self.rect().top
+        elif 135 < angle  <= 180 or -180 < angle <= -135:
+            origin = self.rect().left, self.rect().centery
+        else:
+            origin = self.rect().centerx, self.rect().bottom
+        x_const = cos(angle)
+        y_const = -sin(angle)
+        for distance in range(min_depth, depth+1):
+            x = int(origin[0] + x_const * distance) // tile_size
+            y = int(origin[1] + y_const * distance) // tile_size
+            loc = str(x) + ';' + str(y)
+            if loc in tilemap.tilemap:
+                return tilemap.tilemap[loc]['pos']
+        return False
