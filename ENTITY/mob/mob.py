@@ -1,33 +1,32 @@
-from ENTITY.entity import Entity
-from typing import Literal
-from pygame.math import Vector2
+from ENTITY.entity import PhysicsEntity
+from typing import Literal, Tuple
 import math
 
 
-class Mob(Entity):
+class Mob(PhysicsEntity):
     sprite_path="assets/textures/mob/"
 
-    def _circular_los(self, player_position: Vector2, threshold: int):
-        diff_x = player_position.x - self.position.x
-        diff_y = player_position.y - self.position.y
+    def _circular_los(self, player_position: Tuple[int, int], threshold: int):
+        diff_x = player_position[0] - self.position_int[0]
+        diff_y = player_position[1] - self.position_int[1]
         err_player_to_mob = math.sqrt(diff_x**2 + diff_y**2)
         return err_player_to_mob <= threshold
 
-    def _vertical_los(self, player_position: Vector2, threshold: int):
+    def _vertical_los(self, player_position: Tuple[int, int], threshold: int):
         x_offset = self.base_size[0]/2
-        return player_position.x >= self.position.x - x_offset and\
-            player_position.x <= self.position.x + x_offset and\
-            player_position.y >= self.position.y - threshold and\
-            player_position.y <= self.position.y + threshold
+        return player_position[0] >= self.position_int[0] - x_offset and\
+            player_position[0] <= self.position_int[0] + x_offset and\
+            player_position[1] >= self.position_int[1] - threshold and\
+            player_position[1] <= self.position_int[1] + threshold
 
-    def _horizontal_los(self, player_position: Vector2, threshold: int):
+    def _horizontal_los(self, player_position: Tuple[int, int], threshold: int):
         y_offset = self.base_size[1]/2
-        return player_position.x >= self.position.x - threshold and\
-            player_position.x <= self.position.x + threshold and\
-            player_position.y >= self.position.y - y_offset and\
-            player_position.y <= self.position.y + y_offset
+        return player_position[0] >= self.position_int[0] - threshold and\
+            player_position[0] <= self.position_int[0] + threshold and\
+            player_position[1] >= self.position_int[1] - y_offset and\
+            player_position[1] <= self.position_int[1] + y_offset
 
-    def los(self, player_position: Vector2, threshold: int = 5, los_type: Literal["circular", "vertical", "horizontal"] = "circular") -> bool:
+    def los(self, player_position: Tuple[int, int], threshold: int = 5, los_type: Literal["circular", "vertical", "horizontal"] = "circular") -> bool:
         if los_type == "circular":
             return self._circular_los(player_position=player_position, threshold=threshold)
         elif los_type == "vertical":
