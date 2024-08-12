@@ -93,6 +93,7 @@ class PhysicsEntity:
         entity_rect = self.rect()
         e_surf = pygame.Surface((entity_rect.w, entity_rect.h))
         e_surf.fill((255, 0, 0))
+        e_surf.fill((0, 0, 0, 0), e_surf.get_rect().inflate(-2, 2))
         surf.blit(e_surf, (entity_rect.x - offset[0], entity_rect.y - offset[1]))
         for rect in tilemap.physics_rects_around(self.position_float):
             r_surf = pygame.Surface((rect.w, rect.h))

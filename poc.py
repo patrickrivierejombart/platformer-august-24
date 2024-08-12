@@ -14,8 +14,8 @@ class GAME_NAME_HERE:
 
         pygame.display.set_caption("Game POC")
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.display = pygame.Surface((WIDTH//4, HEIGHT//4))
-        self.character_layer = pygame.Surface((WIDTH//2, HEIGHT//2), pygame.SRCALPHA)
+        self.display = pygame.Surface((TILE_DISPLAY_WIDTH, TILE_DISPLAY_HEIGHT), pygame.SRCALPHA)
+        self.character_layer = pygame.Surface((CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT), pygame.SRCALPHA)
         
         self.clock = pygame.time.Clock()
 
@@ -43,8 +43,8 @@ class GAME_NAME_HERE:
 
     def run(self):
         while True:
-            self.display.fill((0, 0, 0), (0, 0, WIDTH, HEIGHT))
-            self.character_layer.fill((0, 0, 0, 0), (0, 0, WIDTH, HEIGHT))
+            self.display.fill((0, 0, 0), (0, 0, WIDTH//4, HEIGHT//4))
+            self.character_layer.fill((0, 0, 0, 0), (0, 0, WIDTH//2, HEIGHT//2))
 
             self.camera.scroll()
             render_scroll = self.camera.render_scroll()
