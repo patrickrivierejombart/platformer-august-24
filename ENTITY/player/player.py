@@ -30,13 +30,12 @@ class Player(PhysicsEntity):
         # Get player active status
         if self.velocity_float[1] < 0:
             self.status = "jump"
-        elif self.velocity_float[0] != 0 and self._raycast(-90, 1, 4, tilemap=tilemap):
+        elif self.velocity_float[0] != 0 and self._raycast(-90, 1, 4, tilemap=tilemap, logic='and'):
             self.status = "walk"
-        elif not self._raycast(-90, 1, 4, tilemap=tilemap):
+        elif not self._raycast(-90, 1, 4, tilemap=tilemap, logic='or'):
             self.status = "fall"
         else:
             self.status = "idle"
-        print(self.status)
 
     def _jump(self, do_jump: bool):
         # Player jump if on_ground

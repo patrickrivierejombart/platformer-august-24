@@ -30,12 +30,12 @@ class GAME_NAME_HERE:
         self.player = Player(
             (250, 200), 
             4, 
-            (player_size_x, player_size_y), 
+            (PLAYER_SIZE_X, PLAYER_SIZE_Y), 
             "assets/textures/player/",
             animation_speed=0.08
         )
 
-        self.tilemap = Tilemap(self, tile_size=tile_size)
+        self.tilemap = Tilemap(self, tile_size=TILE_SIZE)
         self.tilemap.load("assets/level_saves/level-1_map.json")
 
         self.camera = Camera()

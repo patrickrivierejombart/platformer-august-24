@@ -1,8 +1,8 @@
 import pygame
 from utils.texture_utils import import_sprite
-from typing import Tuple
-from settings import gravity, dt, player_walk_speed, player_jump_speed, tile_to_character_ratio, tile_size
-from ENVIRONMENT.elements.tilemap import Tilemap
+from typing import Tuple, Literal
+from settings import GRAVITY, DT, PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED, TILE_TO_CHARACTER_RATIO, TILE_SIZE, CHARACTER_STATUS_DELAY
+from ENVIRONMENT.elements.tilemap import Tilemap, PHYSICS_TILES
 from math import cos, sin
 
 
@@ -14,8 +14,8 @@ class PhysicsEntity:
                  sprite_path: str,
                  animation_speed: float = 0.15,
                  base_hp: int = 5,
-                 base_speed: int = player_walk_speed,
-                 base_jump: int = player_jump_speed,
+                 base_speed: int = PLAYER_WALK_SPEED,
+                 base_jump: int = PLAYER_JUMP_SPEED,
                  base_strength: int = 5,
                  base_intelligence: int = 5,
                  base_defense: int = 5,
@@ -55,11 +55,15 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         # update time
         self.previous_time = 0
+        # delays
+        self._universal_delay = 0
+        self._status_delay = CHARACTER_STATUS_DELAY
     
     def rect(self):
-        return pygame.Rect(self.position_int[0], self.position_int[1], self.size[0] // tile_to_character_ratio, self.size[1] // tile_to_character_ratio)
+        return pygame.Rect(self.position_int[0], self.position_int[1], self.size[0] // TILE_TO_CHARACTER_RATIO, self.size[1] // TILE_TO_CHARACTER_RATIO)
     
     def update(self, tilemap: Tilemap, event, surf, offset):
+        self._universal_delay += 1
         self._act(event)
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         
@@ -68,8 +72,8 @@ class PhysicsEntity:
         delta_time = current_time - self.previous_time
         self.previous_time = current_time
         _dt = delta_time
-        if delta_time > dt:
-            _dt = dt
+        if delta_time > DT:
+            _dt = DT
 
         self.velocity_float[0] = round(self._approachX(self.velocity_goal_int[0], self.velocity_float[0], _dt), 2)
         self.velocity_float[1] = round(self._approachY(self.velocity_goal_int[1], self.velocity_float[1], _dt), 2)
@@ -110,7 +114,7 @@ class PhysicsEntity:
                 self.position_float[1] = entity_rect.y
                 self.position_int[1] = entity_rect.y
         
-        self.velocity_goal_float[1] = self.velocity_goal_float[1] + gravity * _dt
+        self.velocity_goal_float[1] = self.velocity_goal_float[1] + GRAVITY * _dt
         self.velocity_goal_int[0] = int(self.velocity_goal_float[0])
         self.velocity_goal_int[1] = int(self.velocity_goal_float[1])
         
@@ -118,14 +122,15 @@ class PhysicsEntity:
             self.velocity_goal_float[1] = 0
             self.velocity_float[1] = 0
         
-        self._get_status(tilemap=tilemap)
+        if self._universal_delay % self._status_delay == 0:
+            self._get_status(tilemap=tilemap)
         self._animate()
 
         
     def render(self, surf, offset=(0, 0)):
         posX = self.position_int[0] - offset[0] #  tile_to_character_ratio * self.position_int[0]
         posY = self.position_int[1] - offset[1] #  tile_to_character_ratio * self.position_int[1]
-        surf.blit(self.image, (posX * tile_to_character_ratio, posY * tile_to_character_ratio))
+        surf.blit(self.image, (posX * TILE_TO_CHARACTER_RATIO, posY * TILE_TO_CHARACTER_RATIO))
 
     def take_damage(self, attack):
         # Deal damage to the entity
@@ -194,22 +199,40 @@ class PhysicsEntity:
         else:
             self.image = image
     
-    def _raycast(self, angle, min_depth, depth, tilemap: Tilemap):
-        depth = min(tile_size*3, depth)  # depth cannot go over 3 tiles (limit load on cpu)
+    def _raycast(self, angle, min_depth, depth, tilemap: Tilemap, logic: Literal['or', 'and']):
+        depth = min(TILE_SIZE*3, depth)  # depth cannot go over 3 tiles (limit load on cpu)
+        origin_1 = [0, 0]
+        origin_2 = [0, 0]
+        origin = [0, 0]
         if -45 < angle <= 45:
+            origin_1 = self.rect().right, self.rect().top
+            origin_2 = self.rect().right, self.rect().bottom
             origin = self.rect().right, self.rect().centery
         elif 45 < angle <= 135:
+            origin_1 = self.rect().left, self.rect().top
+            origin_2 = self.rect().right, self.rect().top
             origin = self.rect().centerx, self.rect().top
         elif 135 < angle  <= 180 or -180 < angle <= -135:
+            origin_1 = self.rect().left, self.rect().bottom
+            origin_2 = self.rect().left, self.rect().top
             origin = self.rect().left, self.rect().centery
         else:
+            origin_1 = self.rect().right, self.rect().bottom
+            origin_2 = self.rect().left, self.rect().bottom
             origin = self.rect().centerx, self.rect().bottom
         x_const = cos(angle)
         y_const = -sin(angle)
         for distance in range(min_depth, depth+1):
-            x = int(origin[0] + x_const * distance) // tile_size
-            y = int(origin[1] + y_const * distance) // tile_size
-            loc = str(x) + ';' + str(y)
-            if loc in tilemap.tilemap:
-                return tilemap.tilemap[loc]['pos']
+            x = int(origin[0] + x_const * distance) // TILE_SIZE
+            y = int(origin[1] + y_const * distance) // TILE_SIZE
+            x_1 = int(origin_1[0] + x_const * distance) // TILE_SIZE
+            y_1 = int(origin_1[1] + y_const * distance) // TILE_SIZE
+            x_2 = int(origin_2[0] + x_const * distance) // TILE_SIZE
+            y_2 = int(origin_2[1] + y_const * distance) // TILE_SIZE
+            loc = str(x) + ';' + str(y), str(x_1) + ';' + str(y_1), str(x_2) + ';' + str(y_2)
+            collision_loc = [tilemap.tilemap[loc_i]['pos'] for loc_i in loc if loc_i in tilemap.tilemap and tilemap.tilemap[loc_i]['type'] in PHYSICS_TILES]
+            if logic == 'or' and len(collision_loc) > 0:
+                return collision_loc
+            if logic == 'and' and len(collision_loc) == 3:
+                return collision_loc
         return False
