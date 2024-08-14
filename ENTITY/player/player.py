@@ -1,6 +1,6 @@
 from utils.texture_utils import import_sprite
 from ENTITY.entity import PhysicsEntity
-from ENVIRONMENT.elements.tilemap import Tilemap
+from ENVIRONMENT.elements.collisions import CollisionMap
 from settings import PLAYER_JUMP, PLAYER_WALK_RIGHT, PLAYER_WALK_LEFT, STOP_PLAYER_JUMP, STOP_PLAYER_WALK_RIGHT, STOP_PLAYER_WALK_LEFT
 
 
@@ -22,17 +22,13 @@ class Player(PhysicsEntity):
             full_path = character_path + animation
             self.animations[animation] = import_sprite(full_path)
 
-    def _get_status(self, tilemap: Tilemap):
-        """
-        elif not self.collisions['down'] and self.velocity_float[1] > 0:
-            self.status = "fall"
-        """
+    def _get_status(self, collision_map: CollisionMap):
         # Get player active status
         if self.velocity_float[1] < 0:
             self.status = "jump"
-        elif self.velocity_float[0] != 0 and self._raycast(-90, 1, 4, tilemap=tilemap, logic='and'):
+        elif self.velocity_float[0] != 0 and self._raycast(-90, 1, 4, collision_map=collision_map, logic='and'):
             self.status = "walk"
-        elif not self._raycast(-90, 1, 4, tilemap=tilemap, logic='or'):
+        elif not self._raycast(-90, 1, 4, collision_map=collision_map, logic='or'):
             self.status = "fall"
         else:
             self.status = "idle"
