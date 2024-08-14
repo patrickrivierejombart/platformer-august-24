@@ -52,6 +52,7 @@ class PhysicsEntity:
         # player status
         self.lives = lives
         self.status = "idle"
+        self.previous_status = "idle"
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         # update time
         self.previous_time = 0
@@ -192,6 +193,9 @@ class PhysicsEntity:
     
     def _animate(self):
         # Animate the entity sprite
+        if self.previous_status != self.status:
+            self.previous_status = self.status
+            self.frame_index = 0
         animation = self.animations[self.status]
         self.frame_index += self.animation_speed
         if self.frame_index >= len(animation):
