@@ -39,36 +39,36 @@ class Game:
         
         self.statMenu_resume_button = Button("Resume", self, self.arialFont, "stats")
         self.statMenu_attack_button = StatField("Add attack",self, self.arialFont, "stats")
-        self.statMenu_defense_button = Button("Add defense",self, self.arialFont, "stats")
+        self.statMenu_defense_button = StatField("Add defense",self, self.arialFont, "stats")
         
         
 
     def _draw_start_menu(self):
-        self.screen.fill((0, 0, 0))
-        
-        self.startMenu_start_button.displayButton(self.screen)
-        self.startMenu_stats_button.displayButton(self.screen)
-        self.startMenu_quit_button.displayButton(self.screen)
-        # self.startMenu_sounds_button.displayButton(self.screen)
-        
-        mousePressed = pygame.mouse.get_pressed()
-        if(mousePressed[0] == True): 
-            print("Left click")
-            mousePos = pygame.mouse.get_pos()
-            print(mousePos)
-            if(self.startMenu_quit_button.isClicked(mousePos)):
-                print("Quit button pressed")
-                pygame.quit()
-                sys.exit()
-            elif(self.startMenu_start_button.isClicked(mousePos)):
-                print("Start button pressed")
-                self.gameStarted = True
-            elif(self.startMenu_stats_button.isClicked(mousePos)):
-                print("Stats button pressed")
-                self.showStatMenu = True
-        if(mousePressed[1] == True): print("Middle click")
-        if(mousePressed[2] == True): print("Right click")
-        pygame.display.update()
+            self.screen.fill((0, 0, 0))
+            
+            self.startMenu_start_button.displayButton(self.screen)
+            self.startMenu_stats_button.displayButton(self.screen)
+            self.startMenu_quit_button.displayButton(self.screen)
+            # self.startMenu_sounds_button.displayButton(self.screen)
+            print("C Good")
+            mousePressed = pygame.mouse.get_pressed()
+            if(mousePressed[0] == True): 
+                print("Left click")
+                mousePos = pygame.mouse.get_pos()
+                print(mousePos)
+                if(self.startMenu_quit_button.isClicked(mousePos)):
+                    print("Quit button pressed")
+                    pygame.quit()
+                    sys.exit()
+                elif(self.startMenu_start_button.isClicked(mousePos)):
+                    print("Start button pressed")
+                    self.gameStarted = True
+                elif(self.startMenu_stats_button.isClicked(mousePos)):
+                    print("Stats button pressed")
+                    self.showStatMenu = True
+            if(mousePressed[1] == True): print("Middle click")
+            if(mousePressed[2] == True): print("Right click")
+            pygame.display.update()
         
     def _draw_option_menu(self):
         self.screen.fill((0, 0, 0))
@@ -169,3 +169,4 @@ class Game:
         elif(game_event == "no_stat"): self.showStatMenu = False
         self.optionMenu_state(self.screen)
         self.statMenu_state(self.screen)
+        

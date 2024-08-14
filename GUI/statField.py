@@ -7,9 +7,10 @@ class StatField(Button):
     def __init__(self, text, game, font, category):
         super().__init__(text, game, font, category)
         self.jauge = 8
+        self.font=font
         
         minusOffset = 10
-        plusOffset = 300
+        plusOffset = 500
         self.minusButton = Button(
             "-", 
             self, 
@@ -34,10 +35,8 @@ class StatField(Button):
                 [self.coordBR[0] + plusOffset,self.coordBR[1]]
             ]
         )
-        self.count = 0
         self.bars = []
-        for i in range(self.jauge): self.bars.append(font.render(str(self.count), True, (255, 255, 255))); self.count+=1
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH",self.bars)
+        self.count = 0
         
     def isClicked(self, mousePos):
         if(self.minusButton.isClicked(mousePos) or self.plusButton.isClicked(mousePos)):
@@ -50,6 +49,10 @@ class StatField(Button):
         self.jauge += 1 if self.plusButton.isClicked(mousePos) and self.jauge < 10 else 0
         self.jauge -=1 if self.minusButton.isClicked(mousePos) and self.jauge > 0 else 0
         print("jauge " + str(self.jauge))
+        self.bars = []
+        self.count = 0
+        for i in range(self.jauge): self.bars.append(self.font.render(str(self.count), True, (255, 255, 255))); self.count+=1
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH",self.bars)
         
         
     def displayButton(self, screen):

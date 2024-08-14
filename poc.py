@@ -55,7 +55,7 @@ class GAME_NAME_HERE:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN and game.game.gameStarted:
                     if event.key == pygame.K_LEFT:
                         self.player_event = "left"
                         # print("left key down")
@@ -94,7 +94,13 @@ class GAME_NAME_HERE:
             self.game.update(self.player,self.game_event)
             pygame.display.update()
             self.clock.tick(60)
+            
 
+    # def lobby(self):
+    #     while not self.game.gameStarted:
+    #         self.game.startMenu_state(game.screen)
+            
 
 if __name__ == "__main__":
-    play = GAME_NAME_HERE().run()
+    game = GAME_NAME_HERE()
+    game.run()
