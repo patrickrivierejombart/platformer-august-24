@@ -36,8 +36,8 @@ class Follow(CamScroll):
     def scroll(self):
         self.offset[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.offset[0]) / 30
         self.offset[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.offset[1]) / 30
-        print(self.offset)
+        # print(self.offset)
 
     def render_scroll(self):
-        print(self.offset)
+        # print(self.offset)
         return (int(self.offset[0]), int(self.offset[1]))

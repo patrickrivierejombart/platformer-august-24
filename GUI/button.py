@@ -19,6 +19,11 @@ class Button:
             self.currCountOptionMenu = game.currCountOptionMenu +1
             game.currCountOptionMenu +=1
             self._setCoords(self.buttonCountOptionMenu, self.currCountOptionMenu)
+        elif(category == "stats"):
+            self.buttonCountStatMenu = game.buttonCountStatMenu
+            self.currCountStatMenu = game.currCountStatMenu +1
+            game.currCountStatMenu +=1
+            self._setCoords(self.buttonCountStatMenu, self.currCountStatMenu)
         self.print = 0
         
     def _setCoords(self, buttonCount, currCount):

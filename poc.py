@@ -6,6 +6,7 @@ from ENVIRONMENT.elements.tilemap import Tilemap
 from ENVIRONMENT.camera import Camera, Follow
 from utils.texture_utils import load_image, load_images
 from ENTITY.player.player import Player
+from GUI.game import Game
 
 
 class GAME_NAME_HERE:
@@ -14,11 +15,12 @@ class GAME_NAME_HERE:
 
         pygame.display.set_caption("Game POC")
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.display = pygame.Surface((WIDTH/4, HEIGHT/4))
+        self.display = pygame.Surface((WIDTH/4, HEIGHT/4))  
 
         self.clock = pygame.time.Clock()
 
         self.player_event = False
+        self.game_event = False
 
         self.assets = {
             'sand': load_images('terrain/sand'),
@@ -31,6 +33,8 @@ class GAME_NAME_HERE:
             (player_size_x, player_size_y), 
             "assets/textures/player/"
         )
+        
+        self.game = Game(self.screen)
 
         self.tilemap = Tilemap(self, tile_size=tile_size)
         self.tilemap.load("assets/level_saves/level-1_map.json")
@@ -49,6 +53,8 @@ class GAME_NAME_HERE:
 
             self.player.update(self.tilemap, self.player_event, self.display, offset=render_scroll)
             self.player.render(self.display, offset=render_scroll)
+            
+            
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -57,21 +63,36 @@ class GAME_NAME_HERE:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
                         self.player_event = "left"
-                    if event.key == pygame.K_RIGHT:
+                        # print("left key down")
+                    elif event.key == pygame.K_RIGHT:
                         self.player_event = "right"
-                    if event.key == pygame.K_SPACE:
+                        # print("right key down")
+                    elif event.key == pygame.K_SPACE:
                         self.player_event = "space"
-                    if event.key == pygame.K_ESCAPE:
+                        # print("space key down")
+                    elif event.key == pygame.K_ESCAPE:
                         self.player_event = "escape"
+                        # print("escape key down")
+                    elif event.key == pygame.K_y:
+                        self.game_event = "stats"
+                        # print("y key down")
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
                         self.player_event = "no_left"
-                    if event.key == pygame.K_RIGHT:
+                        # print("left key up")
+                    elif event.key == pygame.K_RIGHT:
                         self.player_event = "no_right" 
-                    if event.key == pygame.K_SPACE:
+                        # print("right key up")
+                    elif event.key == pygame.K_SPACE:
                         self.player_event = "no_space"
+                        # print("space key up")
+                    elif event.key == pygame.K_ESCAPE:
+                        self.player_event = "no_escape"
+                    elif event.key == pygame.K_y:
+                        self.player_event = "no_stats"
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
+            self.game.update(self.player)
             pygame.display.update()
             self.clock.tick(60)
 
