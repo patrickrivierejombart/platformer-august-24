@@ -71,10 +71,18 @@ class GAME_NAME_HERE:
                         self.player_event = "space"
                         # print("space key down")
                     elif event.key == pygame.K_ESCAPE:
-                        self.player_event = "escape"
+                        if(self.game.showOptionMenu):
+                            self.game_event = "no_option"
+                        else:
+                            self.game_event = "option"
+                            self.game.closedFromButton = False
                         # print("escape key down")
                     elif event.key == pygame.K_y:
-                        self.game_event = "stats"
+                        if(self.game.showStatMenu):
+                            self.game_event = "no_stat"
+                        else:
+                            self.game_event = "stat"
+                            self.game.closedFromButton = False
                         # print("y key down")
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -86,13 +94,9 @@ class GAME_NAME_HERE:
                     elif event.key == pygame.K_SPACE:
                         self.player_event = "no_space"
                         # print("space key up")
-                    elif event.key == pygame.K_ESCAPE:
-                        self.player_event = "no_escape"
-                    elif event.key == pygame.K_y:
-                        self.player_event = "no_stats"
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
-            self.game.update(self.player)
+            self.game.update(self.player,self.game_event)
             pygame.display.update()
             self.clock.tick(60)
 

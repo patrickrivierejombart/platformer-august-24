@@ -7,24 +7,36 @@ pygame.font.init()
 
 
 class Button:
-    def __init__(self, text, game, font, category):
+    def __init__(self, text, game, font, category, coords=None):
+        print(text, str(coords))
         self.text = font.render(text, True, (255, 255, 255))
-        if(category == "start"):
+        if(coords):
+            self._setCoordsInnerButton(coords)
+        elif(category == "start"):
+            print("STAAAAAAAAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRRRRTTTTTTTTTTTTTTTTTTTTTTTTT")
             self.buttonCountStartMenu = game.buttonCountStartMenu
             self.currCountStartMenu = game.currCountStartMenu +1
             game.currCountStartMenu +=1
             self._setCoords(self.buttonCountStartMenu, self.currCountStartMenu)
         elif(category == "options"):
+            print("CATEGOOOOOOOOOOOOOOOOOOOOOOOORYYYYYYYYYYYYYYYYYYY")
             self.buttonCountOptionMenu = game.buttonCountOptionMenu
             self.currCountOptionMenu = game.currCountOptionMenu +1
             game.currCountOptionMenu +=1
             self._setCoords(self.buttonCountOptionMenu, self.currCountOptionMenu)
         elif(category == "stats"):
+            print("STAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATS")
             self.buttonCountStatMenu = game.buttonCountStatMenu
             self.currCountStatMenu = game.currCountStatMenu +1
             game.currCountStatMenu +=1
             self._setCoords(self.buttonCountStatMenu, self.currCountStatMenu)
         self.print = 0
+        
+    def _setCoordsInnerButton(self, coords):
+        self.coordTL = coords[0]
+        self.coordTR = coords[1]
+        self.coordBL = coords[2]
+        self.coordBR = coords[3]
         
     def _setCoords(self, buttonCount, currCount):
         height = (HEIGHT/(buttonCount * 2))* (currCount + currCount-1)
@@ -33,6 +45,7 @@ class Button:
         self.coordTR = [WIDTH/2 + self.text.get_width()/2, height - self.text.get_height()/2]
         self.coordBL = [WIDTH/2 - self.text.get_width()/2, height + self.text.get_height()/2]
         self.coordBR = [WIDTH/2 + self.text.get_width()/2, height + self.text.get_height()/2]
+        
         print("h"+str(currCount)+" = ("+ str(HEIGHT)+ "/ (" + str(buttonCount)+ "x2))x "+ str(currCount)+ "+" + str(currCount-1))
         
         

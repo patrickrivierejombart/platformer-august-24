@@ -1,6 +1,7 @@
 import pygame
 import sys
 from GUI.button import Button
+from GUI.statField import StatField
 from settings import HEIGHT, WIDTH
 
 
@@ -10,6 +11,7 @@ pygame.font.init()
 class Game:
     def __init__(self, screen: pygame.Surface):
         self.screen = screen
+        self.closedFromButton = False
         
         self.gameStarted = False
         self.buttonCountStartMenu = 3
@@ -35,9 +37,9 @@ class Game:
         self.optionMenu_resume_button = Button("Resume",self, self.arialFont, "options")
         self.optionMenu_quit_button = Button("Quit",self, self.arialFont, "options")
         
-        self.statMenu_attack_button = Button("Add attack",self, self.arialFont, "stats")
+        self.statMenu_resume_button = Button("Resume", self, self.arialFont, "stats")
+        self.statMenu_attack_button = StatField("Add attack",self, self.arialFont, "stats")
         self.statMenu_defense_button = Button("Add defense",self, self.arialFont, "stats")
-        self.statMenu_quit_button = Button("Quit", self, self.arialFont, "start")
         
         
 
@@ -86,15 +88,16 @@ class Game:
             if(self.optionMenu_resume_button.isClicked(mousePos)):
                 print("Resume button pressed")
                 self.showOptionMenu = False
+                self.closedFromButton = True
         if(mousePressed[1] == True): print("Middle click")
         if(mousePressed[2] == True): print("Right click")
         pygame.display.update()
         
     def _draw_stat_menu(self):
         self.screen.fill((0, 0, 0))
+        self.statMenu_resume_button.displayButton(self.screen)
         self.statMenu_attack_button.displayButton(self.screen)
         self.statMenu_defense_button.displayButton(self.screen)
-        self.statMenu_quit_button.displayButton(self.screen)
         mousePressed = pygame.mouse.get_pressed()
         if(mousePressed[0] == True): 
             print("Left click")
@@ -104,9 +107,10 @@ class Game:
                 print("Attack button pressed")
             if(self.statMenu_defense_button.isClicked(mousePos)):
                 print("Defense button pressed")
-            if(self.statMenu_quit_button.isClicked(mousePos)):
-                print("Quit button pressed")
+            if(self.statMenu_resume_button.isClicked(mousePos)):
+                print("Resume button pressed")
                 self.showStatMenu = False
+                self.closedFromButton = True
         if(mousePressed[1] == True): print("Middle click")
         if(mousePressed[2] == True): print("Right click")
         pygame.display.update()
@@ -157,8 +161,11 @@ class Game:
             self.screen = screen
             self.currCountStatMenu = 0
 
-    def update(self,player):
+    def update(self,player,game_event):
         self.startMenu_state(self.screen)
+        if(game_event == "option" and not self.closedFromButton): self.showOptionMenu = True
+        elif(game_event == "no_option"): self.showOptionMenu = False
+        if(game_event == "stat" and not self.closedFromButton): self.showStatMenu = True
+        elif(game_event == "no_stat"): self.showStatMenu = False
         self.optionMenu_state(self.screen)
         self.statMenu_state(self.screen)
-        
