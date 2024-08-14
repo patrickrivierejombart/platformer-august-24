@@ -1,8 +1,9 @@
 import pygame
 from utils.texture_utils import import_sprite
-from typing import Tuple
-from settings import gravity, dt, player_walk_speed, player_jump_speed
-from ENVIRONMENT.elements.tilemap import Tilemap
+from typing import Tuple, Literal
+from settings import GRAVITY, DT, PLAYER_WALK_SPEED, PLAYER_JUMP_SPEED, CHARACTER_STATUS_DELAY
+from ENVIRONMENT.elements.collisions import CollisionMap
+from math import cos, sin
 
 
 class PhysicsEntity:
@@ -13,8 +14,8 @@ class PhysicsEntity:
                  sprite_path: str,
                  animation_speed: float = 0.15,
                  base_hp: int = 5,
-                 base_speed: int = player_walk_speed,
-                 base_jump: int = player_jump_speed,
+                 base_speed: int = PLAYER_WALK_SPEED,
+                 base_jump: int = PLAYER_JUMP_SPEED,
                  base_strength: int = 5,
                  base_intelligence: int = 5,
                  base_defense: int = 5,
@@ -33,6 +34,7 @@ class PhysicsEntity:
         self.image = self.animations["idle"][self.frame_index].convert_alpha()
         self.base_size = base_size
         self.size = [self.base_size[0], self.base_size[1]]
+        self.moving_left = False
         # player movement
         self.moving_x = [False, False]
         self.moving_y = [False, False]
@@ -53,11 +55,15 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         # update time
         self.previous_time = 0
+        # delays
+        self._universal_delay = 0
+        self._status_delay = CHARACTER_STATUS_DELAY
     
     def rect(self):
         return pygame.Rect(self.position_int[0], self.position_int[1], self.size[0], self.size[1])
     
-    def update(self, tilemap: Tilemap, event, surf, offset):
+    def update(self, collision_map: CollisionMap, event, surf, offset):
+        self._universal_delay += 1
         self._act(event)
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         
@@ -66,8 +72,8 @@ class PhysicsEntity:
         delta_time = current_time - self.previous_time
         self.previous_time = current_time
         _dt = delta_time
-        if delta_time > dt:
-            _dt = dt
+        if delta_time > DT:
+            _dt = DT
 
         self.velocity_float[0] = round(self._approachX(self.velocity_goal_int[0], self.velocity_float[0], _dt), 2)
         self.velocity_float[1] = round(self._approachY(self.velocity_goal_int[1], self.velocity_float[1], _dt), 2)
@@ -77,7 +83,11 @@ class PhysicsEntity:
 
         self.position_int[0] = int(self.position_float[0])
         entity_rect = self.rect()
-        for rect in tilemap.physics_rects_around(self.position_int):
+
+        for rect in collision_map.physics_rects_around(self.position_int)['wall']:
+            r_surf = pygame.Surface((rect.w, rect.h))
+            r_surf.fill((0, 255, 0))
+            surf.blit(r_surf, (rect.x - offset[0], rect.y - offset[1]))
             if entity_rect.colliderect(rect):
                 if frame_movement[0] > 0:
                     entity_rect.right = rect.left
@@ -92,8 +102,9 @@ class PhysicsEntity:
         entity_rect = self.rect()
         e_surf = pygame.Surface((entity_rect.w, entity_rect.h))
         e_surf.fill((255, 0, 0))
+        e_surf.fill((0, 0, 0, 0), e_surf.get_rect().inflate(-2, 2))
         surf.blit(e_surf, (entity_rect.x - offset[0], entity_rect.y - offset[1]))
-        for rect in tilemap.physics_rects_around(self.position_float):
+        for rect in collision_map.physics_rects_around(self.position_float)['ground']:
             r_surf = pygame.Surface((rect.w, rect.h))
             r_surf.fill((0, 255, 0))
             surf.blit(r_surf, (rect.x - offset[0], rect.y - offset[1]))
@@ -102,12 +113,13 @@ class PhysicsEntity:
                     entity_rect.bottom = rect.top
                     self.collisions['down'] = True
                 if frame_movement[1] < 0:
-                    entity_rect.top = rect.bottom
+                    # TODO : Implement later a way to handle ceilings without phasing through ground (differentiate ground and ceiling)
+                    # entity_rect.top = rect.bottom
                     self.collisions['up'] = True
                 self.position_float[1] = entity_rect.y
                 self.position_int[1] = entity_rect.y
         
-        self.velocity_goal_float[1] = self.velocity_goal_float[1] + gravity * _dt
+        self.velocity_goal_float[1] = self.velocity_goal_float[1] + GRAVITY * _dt
         self.velocity_goal_int[0] = int(self.velocity_goal_float[0])
         self.velocity_goal_int[1] = int(self.velocity_goal_float[1])
         
@@ -115,12 +127,15 @@ class PhysicsEntity:
             self.velocity_goal_float[1] = 0
             self.velocity_float[1] = 0
         
-        self._get_status()
+        if self._universal_delay % self._status_delay == 0:
+            self._get_status(collision_map=collision_map)
         self._animate()
 
         
     def render(self, surf, offset=(0, 0)):
-        surf.blit(self.image, (self.position_int[0] - offset[0], self.position_int[1] - offset[1]))
+        posX = self.position_int[0] - offset[0] #  tile_to_character_ratio * self.position_int[0]
+        posY = self.position_int[1] - offset[1] #  tile_to_character_ratio * self.position_int[1]
+        surf.blit(self.image, (posX, posY))
 
     def take_damage(self, attack):
         # Deal damage to the entity
@@ -171,7 +186,7 @@ class PhysicsEntity:
             return current - _dt
         return goal
 
-    def _get_status(self):
+    def _get_status(self, collision_map: CollisionMap):
         """DEFINE IN HERITAGE : use self.status
         when going from one status to the other, reset self.frame_index"""
     
@@ -183,8 +198,48 @@ class PhysicsEntity:
             self.frame_index = 0
         image = animation[int(self.frame_index)]
         image = pygame.transform.scale(image, (self.size[0], self.size[1]))
-        if self.moving_x[1]:
-            self.image = image
-        else:
+        if self.moving_left:
             flipped_image = pygame.transform.flip(image, True, False)
             self.image = flipped_image
+        else:
+            self.image = image
+    
+    def _raycast(self, angle, min_depth, depth, collision_map: CollisionMap, logic: Literal['or', 'and']):
+        POS_RATIO = collision_map.tile_size
+        depth = min(POS_RATIO*3, depth)  # depth cannot go over 3 tiles (limit load on cpu)
+        origin_1 = [0, 0]
+        origin_2 = [0, 0]
+        origin = [0, 0]
+        if -45 < angle <= 45:
+            origin_1 = self.rect().right, self.rect().top
+            origin_2 = self.rect().right, self.rect().bottom
+            origin = self.rect().right, self.rect().centery
+        elif 45 < angle <= 135:
+            origin_1 = self.rect().left, self.rect().top
+            origin_2 = self.rect().right, self.rect().top
+            origin = self.rect().centerx, self.rect().top
+        elif 135 < angle  <= 180 or -180 < angle <= -135:
+            origin_1 = self.rect().left, self.rect().bottom
+            origin_2 = self.rect().left, self.rect().top
+            origin = self.rect().left, self.rect().centery
+        else:
+            origin_1 = self.rect().right, self.rect().bottom
+            origin_2 = self.rect().left, self.rect().bottom
+            origin = self.rect().centerx, self.rect().bottom
+        x_const = cos(angle)
+        y_const = -sin(angle)
+        for distance in range(min_depth, depth+1):
+            x = int((origin[0] + x_const * distance) // POS_RATIO)
+            y = int((origin[1] + y_const * distance) // POS_RATIO)
+            x_1 = int((origin_1[0] + x_const * distance) // POS_RATIO)
+            y_1 = int((origin_1[1] + y_const * distance) // POS_RATIO)
+            x_2 = int((origin_2[0] + x_const * distance) // POS_RATIO)
+            y_2 = int((origin_2[1] + y_const * distance) // POS_RATIO)
+            loc = str(x) + ';' + str(y), str(x_1) + ';' + str(y_1), str(x_2) + ';' + str(y_2)
+            collision_loc = [collision_map.ground[loc_i]['pos'] for loc_i in loc if loc_i in collision_map.ground]
+            collision_loc.extend([collision_map.wall[loc_i]['pos'] for loc_i in loc if loc_i in collision_map.wall])
+            if logic == 'or' and len(collision_loc) > 0:
+                return collision_loc
+            if logic == 'and' and len(collision_loc) == 3:
+                return collision_loc
+        return False
