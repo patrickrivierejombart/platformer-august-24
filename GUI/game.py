@@ -84,8 +84,7 @@ class Game:
         life_image = pygame.image.load(img_path)
         life_image = pygame.transform.scale(life_image, (life_size, life_size))
         indent = 0
-        
-        for life in range(player.life):
+        for life in range(player.hp):
             indent += life_size
             self.screen.blit(life_image, (indent, life_size))
 
@@ -101,7 +100,7 @@ class Game:
         self.screen.blit(message, (WIDTH // 3, 70))
 
     def game_state(self, player, goal):
-        if player.life <= 0 or player.rect.y >= HEIGHT:
+        if player.hp <= 0 or player.rect.y >= HEIGHT:
             self._game_lose(player)
         elif player.rect.colliderect(goal.rect):
             self._game_win(player)
