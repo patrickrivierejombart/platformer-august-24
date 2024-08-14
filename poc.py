@@ -2,9 +2,8 @@
 import pygame
 import sys
 from settings import *
-from ENVIRONMENT.elements.tilemap import Tilemap
+from ENVIRONMENT.elements.level_handle import LevelHandle
 from ENVIRONMENT.camera import Camera, Follow
-from utils.texture_utils import load_image, load_images
 from ENTITY.player.player import Player
 from GUI.game import Game
 
@@ -15,43 +14,39 @@ class GAME_NAME_HERE:
 
         pygame.display.set_caption("Game POC")
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.display = pygame.Surface((WIDTH/4, HEIGHT/4))  
-
+        self.display = pygame.Surface((CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT), pygame.SRCALPHA)
+        
         self.clock = pygame.time.Clock()
 
         self.player_event = False
         self.game_event = False
 
-        self.assets = {
-            'sand': load_images('terrain/sand'),
-            'background': load_image('background.jpg')
-        }
-
         self.player = Player(
-            (250, 200), 
+            (1, -64), 
             4, 
-            (player_size_x, player_size_y), 
-            "assets/textures/player/"
+            (PLAYER_SIZE_X, PLAYER_SIZE_Y), 
+            "assets/textures/player/",
+            animation_speed=0.08
         )
         
         self.game = Game(self.screen)
 
-        self.tilemap = Tilemap(self, tile_size=tile_size)
-        self.tilemap.load("assets/level_saves/level-1_map.json")
+        self.level_handle = LevelHandle()
+        self.level_handle.load_level('level-1')
 
         self.camera = Camera()
         self.camera.setmethod(Follow(self.player, self.display))
 
     def run(self):
         while True:
-            self.display.fill((0, 0, 0), (0, 0, WIDTH, HEIGHT))
+            self.display.fill((0, 0, 0), (0, 0, CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT))
 
             self.camera.scroll()
             render_scroll = self.camera.render_scroll()
 
-            self.tilemap.render(self.display, offset=render_scroll)
+            self.level_handle.render(self.display, offset=render_scroll)
 
-            self.player.update(self.tilemap, self.player_event, self.display, offset=render_scroll)
+            self.player.update(self.level_handle.collision_map, self.player_event, self.display, offset=render_scroll)
             self.player.render(self.display, offset=render_scroll)
             
             
