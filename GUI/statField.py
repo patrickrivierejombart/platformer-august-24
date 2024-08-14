@@ -6,7 +6,7 @@ from GUI.button import Button
 class StatField(Button):
     def __init__(self, text, game, font, category):
         super().__init__(text, game, font, category)
-        self.jauge = 8
+        self.jauge = 0
         self.font=font
         
         minusOffset = 10
@@ -48,11 +48,9 @@ class StatField(Button):
     def updateJauge(self, mousePos):
         self.jauge += 1 if self.plusButton.isClicked(mousePos) and self.jauge < 10 else 0
         self.jauge -=1 if self.minusButton.isClicked(mousePos) and self.jauge > 0 else 0
-        print("jauge " + str(self.jauge))
         self.bars = []
         self.count = 0
         for i in range(self.jauge): self.bars.append(self.font.render(str(self.count), True, (255, 255, 255))); self.count+=1
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHH",self.bars)
         
         
     def displayButton(self, screen):
@@ -63,7 +61,5 @@ class StatField(Button):
         while currcount < self.count: 
             screen.blit(self.bars[currcount], (self.coordTL[0]+ (currcount+1) * 40, self.coordTL[1]))
             currcount+=1
-            # print("currCount = ", currcount)
-        # for x in self.bars: screen.blit(x, (self.coordTL[0]+ 2, self.coordTL[1]))
         
     

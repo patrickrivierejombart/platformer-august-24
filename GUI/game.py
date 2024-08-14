@@ -1,8 +1,13 @@
 import pygame
 import sys
+import time
 from GUI.button import Button
 from GUI.statField import StatField
+from GUI.controlField import ControlField
 from settings import HEIGHT, WIDTH
+from controls import Controls
+from GUI.controlMenu import ControlMenu
+
 
 
 pygame.font.init()
@@ -10,38 +15,44 @@ pygame.font.init()
 
 class Game:
     def __init__(self, screen: pygame.Surface):
+        
         self.screen = screen
         self.closedFromButton = False
         
-        self.gameStarted = False
-        self.buttonCountStartMenu = 3
-        self.currCountStartMenu = 0
-        
-        self.showOptionMenu = False
-        self.buttonCountOptionMenu = 2
-        self.currCountOptionMenu = 0
-        
-        self.showStatMenu = False
-        self.buttonCountStatMenu = 3
-        self.currCountStatMenu = 0
         
         self.arialFont = pygame.font.SysFont('arial', 40)
         self.font = pygame.font.SysFont('impact', 70)
         self.message_color = pygame.Color("darkorange")
         
+        # Control menu
+        self.showControlMenu = False
+        # Start menu
+        self.gameStarted = False
+        self.buttonCountStartMenu = 3
+        self.currCountStartMenu = 0
         self.startMenu_start_button = Button("Start", self, self.arialFont, "start")
         self.startMenu_stats_button = Button("Stats", self, self.arialFont, "start")
         self.startMenu_quit_button = Button("Quit", self, self.arialFont, "start")
-        # self.startMenu_sounds_button = Button("Sounds", self, self.arialFont, "start")
         
+        # Option menu
+        self.showOptionMenu = False
+        self.buttonCountOptionMenu = 3
+        self.currCountOptionMenu = 0
         self.optionMenu_resume_button = Button("Resume",self, self.arialFont, "options")
+        self.optionMenu_control_button = Button("Controls",self, self.arialFont, "options")
         self.optionMenu_quit_button = Button("Quit",self, self.arialFont, "options")
         
+        # Stat menu
+        self.showStatMenu = False
+        self.buttonCountStatMenu = 3
+        self.currCountStatMenu = 0
         self.statMenu_resume_button = Button("Resume", self, self.arialFont, "stats")
         self.statMenu_attack_button = StatField("Add attack",self, self.arialFont, "stats")
         self.statMenu_defense_button = StatField("Add defense",self, self.arialFont, "stats")
         
-        
+    def menuOpened(self):
+        return True if self.showOptionMenu or self.showStatMenu or self.showControlMenu else False
+    
 
     def _draw_start_menu(self):
             self.screen.fill((0, 0, 0))
@@ -74,6 +85,7 @@ class Game:
         self.screen.fill((0, 0, 0))
         
         self.optionMenu_resume_button.displayButton(self.screen)
+        self.optionMenu_control_button.displayButton(self.screen)
         self.optionMenu_quit_button.displayButton(self.screen)
         
         mousePressed = pygame.mouse.get_pressed()
@@ -85,6 +97,11 @@ class Game:
                 print("Quit button pressed")
                 pygame.quit()
                 sys.exit()
+            if(self.optionMenu_control_button.isClicked(mousePos)):
+                print("Controls button pressed")
+                self.showOptionMenu = False
+                self.closedFromButton = True
+                self.showControlMenu = True
             if(self.optionMenu_resume_button.isClicked(mousePos)):
                 print("Resume button pressed")
                 self.showOptionMenu = False
@@ -92,7 +109,7 @@ class Game:
         if(mousePressed[1] == True): print("Middle click")
         if(mousePressed[2] == True): print("Right click")
         pygame.display.update()
-        
+    
     def _draw_stat_menu(self):
         self.screen.fill((0, 0, 0))
         self.statMenu_resume_button.displayButton(self.screen)
@@ -153,7 +170,7 @@ class Game:
         else: 
             self.screen = screen
             self.currCountOptionMenu = 0
-
+            
     def statMenu_state(self, screen: pygame.Surface):
         if(self.showStatMenu): 
             self._draw_stat_menu()
@@ -161,12 +178,22 @@ class Game:
             self.screen = screen
             self.currCountStatMenu = 0
 
+    def controlMenu_state(self, screen: pygame.Surface):
+            if(self.showControlMenu): 
+                ControlMenu(self.screen, self)._draw_control_menu()
+            else: 
+                self.screen = screen
+                self.currCountControlMenu = 0
     def update(self,player,game_event):
         self.startMenu_state(self.screen)
+        
         if(game_event == "option" and not self.closedFromButton): self.showOptionMenu = True
         elif(game_event == "no_option"): self.showOptionMenu = False
+        self.optionMenu_state(self.screen)
+        
         if(game_event == "stat" and not self.closedFromButton): self.showStatMenu = True
         elif(game_event == "no_stat"): self.showStatMenu = False
-        self.optionMenu_state(self.screen)
         self.statMenu_state(self.screen)
+        
+        self.controlMenu_state(self.screen)
         

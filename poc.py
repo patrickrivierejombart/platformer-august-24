@@ -6,6 +6,7 @@ from ENVIRONMENT.elements.level_handle import LevelHandle
 from ENVIRONMENT.camera import Camera, Follow
 from ENTITY.player.player import Player
 from GUI.game import Game
+from controls import Controls
 
 
 class GAME_NAME_HERE:
@@ -18,6 +19,7 @@ class GAME_NAME_HERE:
         
         self.clock = pygame.time.Clock()
 
+        
         self.player_event = False
         self.game_event = False
 
@@ -56,23 +58,23 @@ class GAME_NAME_HERE:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN and game.game.gameStarted:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == Controls.LEFT and not game.game.menuOpened():
                         self.player_event = "left"
                         # print("left key down")
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == Controls.RIGHT and not game.game.menuOpened():
                         self.player_event = "right"
                         # print("right key down")
-                    elif event.key == pygame.K_SPACE:
+                    elif event.key == Controls.JUMP and not game.game.menuOpened():
                         self.player_event = "space"
                         # print("space key down")
-                    elif event.key == pygame.K_ESCAPE:
+                    elif event.key == Controls.MENU:
                         if(self.game.showOptionMenu):
                             self.game_event = "no_option"
                         else:
                             self.game_event = "option"
                             self.game.closedFromButton = False
                         # print("escape key down")
-                    elif event.key == pygame.K_y:
+                    elif event.key == Controls.STAT_MENU:
                         if(self.game.showStatMenu):
                             self.game_event = "no_stat"
                         else:
@@ -80,13 +82,13 @@ class GAME_NAME_HERE:
                             self.game.closedFromButton = False
                         # print("y key down")
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT:
+                    if event.key == Controls.LEFT:
                         self.player_event = "no_left"
                         # print("left key up")
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == Controls.RIGHT:
                         self.player_event = "no_right" 
                         # print("right key up")
-                    elif event.key == pygame.K_SPACE:
+                    elif event.key == Controls.JUMP:
                         self.player_event = "no_space"
                         # print("space key up")
             
