@@ -20,7 +20,7 @@ class GAME_NAME_HERE:
         self.player_event = False
 
         self.player = Player(
-            (1, -64), 
+            (100, -64), 
             4, 
             (PLAYER_SIZE_X, PLAYER_SIZE_Y), 
             "assets/textures/player/",

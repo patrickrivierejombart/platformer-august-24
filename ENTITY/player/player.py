@@ -6,6 +6,7 @@ from settings import PLAYER_JUMP, PLAYER_WALK_RIGHT, PLAYER_WALK_LEFT, STOP_PLAY
 
 class Player(PhysicsEntity):
     sprite_path="assets/textures/player/"
+    is_jumping = False
 
     def _import_character_assets(self, sprite_path):
         """REDEFINE IN HERITAGE : use self.animations"""
@@ -37,7 +38,10 @@ class Player(PhysicsEntity):
         # Player jump if on_ground
         if not self.collisions['down']:
             return
-        if do_jump:
+        if not do_jump:
+            self.is_jumping = False
+        elif not self.is_jumping:
+            self.is_jumping = True
             self.velocity_goal_float[1] = - do_jump * self.jump
     
     def _crouch(self, do_crouch: bool):

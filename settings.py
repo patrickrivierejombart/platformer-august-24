@@ -1,7 +1,7 @@
 ### DISPLAY VARIABLES ###
 # Ratio and size
 WIDTH, HEIGHT = 1920, 1080
-CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT = 640, 360  # MAIN DISPLAY : character and tiles have the same size
+CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT = 384, 216  # MAIN DISPLAY : character and tiles have the same size 384, 216
 TILE_SIZE = 32
 # Character sizes
 PLAYER_SIZE_X = 32

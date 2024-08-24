@@ -19,10 +19,12 @@ class CollisionMap:
     def __init__(self, tile_size=8):
         self.ground = {}
         self.wall = {}
+        self.ceiling = {}
+        self.jump_through = {}
         self.tile_size = tile_size
     
     def tiles_around(self, pos):
-        tiles = {'ground': [], 'wall': []}
+        tiles = {'ground': [], 'wall': [], 'ceiling': [], 'jump_through': []}
         tile_loc = (int(pos[0] // self.tile_size), int(pos[1] // self.tile_size))
         for offset in NEIGHBOR_OFFSETS:
             check_loc = str(tile_loc[0] + offset[0]) + ';' + str(tile_loc[1] + offset[1])
@@ -30,6 +32,10 @@ class CollisionMap:
                 tiles['ground'].append(self.ground[check_loc])
             elif check_loc in self.wall:
                 tiles['wall'].append(self.wall[check_loc])
+            elif check_loc in self.ceiling:
+                tiles['ceiling'].append(self.ceiling[check_loc])
+            elif check_loc in self.jump_through:
+                tiles['jump_through'].append(self.jump_through[check_loc])
         return tiles
 
     def physics_rects_around(self, pos):
@@ -40,16 +46,26 @@ class CollisionMap:
             ],
             'wall': [pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size)
                      for tile in tiles['wall']
+            ],
+            'ceiling': [pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size)
+                     for tile in tiles['ceiling']
+            ],
+            'jump_through': [pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size)
+                     for tile in tiles['jump_through']
             ]
         }
         return rects
 
     def all_collisions(self):
-        rects = {'ground': [], 'wall': []}
+        rects = {'ground': [], 'wall': [], 'ceiling': [], 'jump_through': []}
         for collision_item in self.ground.values():
             rects['ground'].append(pygame.Rect(collision_item['pos'][0] * self.tile_size, collision_item['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         for collision_item in self.wall.values():
             rects['wall'].append(pygame.Rect(collision_item['pos'][0] * self.tile_size, collision_item['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
+        for collision_item in self.ceiling.values():
+            rects['ceiling'].append(pygame.Rect(collision_item['pos'][0] * self.tile_size, collision_item['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
+        for collision_item in self.jump_through.values():
+            rects['jump_through'].append(pygame.Rect(collision_item['pos'][0] * self.tile_size, collision_item['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
         
     def load(self, path):
@@ -59,4 +75,6 @@ class CollisionMap:
         
         self.ground = map_data['ground']
         self.wall = map_data['wall']
+        self.ceiling = map_data['ceiling']
+        self.jump_through = map_data['jump_through']
         self.tile_size = map_data['tile_size']
