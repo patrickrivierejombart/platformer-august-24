@@ -234,9 +234,6 @@ class PhysicsEntity:
         y_top = collision_rect.y
         y_bottom = y_top + collision_rect.height
 
-        print('x_left: ', x_left, ', x_right: ', x_right)
-        print('y_top: ', y_top, ', y_bottom: ', y_bottom)
-
         for distance in range(min_depth, depth+1):
             x = int((origin[0] + x_const * distance))
             y = int((origin[1] + y_const * distance))
@@ -245,10 +242,6 @@ class PhysicsEntity:
             x_2 = int((origin_2[0] + x_const * distance))
             y_2 = int((origin_2[1] + y_const * distance))
 
-            print('x, y: ', (x, y))
-            #loc = str(x) + ';' + str(y), str(x_1) + ';' + str(y_1), str(x_2) + ';' + str(y_2)
-            #collision_loc = [collision_map.ground[loc_i]['pos'] for loc_i in loc if loc_i in collision_map.ground]
-            #collision_loc.extend([collision_map.wall[loc_i]['pos'] for loc_i in loc if loc_i in collision_map.wall])
             loc = (x,y), (x_1,y_1), (x_2,y_2)
             is_x_collision = [(loc_i[0], loc_i[1]) for loc_i in loc if x_left < loc_i[0] < x_right]
             is_y_collision = [(loc_i[0], loc_i[1]) for loc_i in loc if y_top < loc_i[1] < y_bottom]
